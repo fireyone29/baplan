@@ -1,0 +1,30 @@
+<h1>Goals</h1>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Frequency</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @goals.each do |goal| %>
+      <tr data-link="<%= goal_path(goal) %>">
+        <td><%= goal.description %></td>
+        <td><%= goal.frequency %></td>
+        <td><%= link_to edit_goal_path(goal) do %>
+	   <i class="glyphicon glyphicon-pencil"></i>
+	<% end %></td>
+        <td><%= link_to goal, method: :delete, data: { confirm: 'Are you sure?' } do %>
+	  <i class="glyphicon glyphicon-trash"></i>
+	<% end %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Goal', new_goal_path %>

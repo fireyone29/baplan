@@ -4,3 +4,6 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+# make sure factories are valid before running tests
+task :spec => 'factory_girl:lint'
