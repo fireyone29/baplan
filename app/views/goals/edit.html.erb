@@ -1,6 +1,12 @@
-<h1>Editing Goal</h1>
+<%= goals_error_messages! %>
 
-<%= render 'form', goal: @goal %>
-
-<%= link_to 'Show', @goal %> |
-<%= link_to 'Back', goals_path %>
+<div class="basic_form">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4><%= t('.edit_goal', default: 'Edit Goal') %></h4>
+    </div>
+    <%= render 'form', goal: @goal %>
+  </div>
+  <%= link_to 'Show', @goal %> |
+  <%= link_to 'Back', goals_path %>
+</div>

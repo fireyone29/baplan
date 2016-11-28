@@ -1,29 +1,17 @@
-<div class="col-sm-6 col-sm-offset-3">
-  <div class="panel panel-default panel-body">
-    <%= form_for(goal) do |f| %>
-      <% if goal.errors.any? %>
-        <div id="error_explanation">
-	  <h2><%= pluralize(goal.errors.count, "error") %> prohibited this goal from being saved:</h2>
+<div class="panel-body">
+  <%= form_for(goal) do |f| %>
+    <div class="form-group">
+      <%= f.label :description, class: 'control-label' %>
+      <%= f.text_field :description, class: 'form-control' %>
+      <%= goals_errors_for(:description) %>
+    </div>
 
-	  <ul>
-	    <% goal.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-	     <% end %>
-	  </ul>
-	</div>
-      <% end %>
+    <div class="form-group">
+      <%= f.label :frequency, class: 'control-label' %>
+      <%= f.select :frequency, Goal.frequencies.keys.map {|f| [f.titleize,f]}, {}, class: 'form-control' %>
+      <%= goals_errors_for(:frequency) %>
+    </div>
 
-      <div class="form-group">
-	<%= f.label :description %>
-	<%= f.text_field :description, class: 'form-control' %>
-      </div>
-
-      <div class="form-group">
-	<%= f.label :frequency %>
-	<%= f.select :frequency, Goal.frequencies.keys.map {|f| [f.titleize,f]}, {}, class: 'form-control' %>
-      </div>
-
-      <%= f.submit class: 'btn btn-primary btn-block btn-lg' %>
-    <% end %>
-  </div>
+    <%= f.submit class: 'btn btn-primary btn-block btn-lg' %>
+  <% end %>
 </div>

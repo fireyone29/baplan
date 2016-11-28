@@ -1,5 +1,6 @@
 <%= devise_error_messages! %>
-<div class="col-sm-6 col-sm-offset-3">
+
+<div class="basic_form">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4><%= t('.account_settings', default: 'Account Settings') %></h4>
@@ -8,8 +9,9 @@
     <div class="panel-body">
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
         <div class="form-group">
-	  <%= f.label :email %><br />
+	  <%= f.label :email, class: 'control-label' %>
 	  <%= f.email_field :email, autofocus: true, class: 'form-control' %>
+	  <%= devise_errors_for(:email) %>
 	</div>
 
 	<% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
@@ -17,22 +19,27 @@
 	<% end %>
 
 	<div class="form-group">
-	  <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
+	  <%= f.label :password, class: 'control-label' %>
+	  <small class="form-text text-muted">(leave blank if you don't want to change it)</small>
 	  <%= f.password_field :password, autocomplete: "off", class: 'form-control' %>
 	  <% if @minimum_password_length %>
-	    <em><%= @minimum_password_length %> characters minimum</em>
+	    <small class="form-text text-muted"><%= @minimum_password_length %> characters minimum</small>
 	  <% end %>
+	  <%= devise_errors_for(:password) %>
 	</div>
 
 	<div class="form-group">
-	  <%= f.label :password_confirmation %>
+	  <%= f.label :password_confirmation, class: 'control-label' %>
 	  <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control' %>
+	  <%= devise_errors_for(:password_confirmation) %>
 	</div>
 
 	<br />
 	<div class="form-group">
-	  <%= f.label :current_password %> <i>(to confirm your changes)</i>
+	  <%= f.label :current_password, class: 'control-label' %>
+	  <small class="form-text text-muted">(to confirm your changes)</small>
 	  <%= f.password_field :current_password, autocomplete: "off", class: 'form-control' %>
+	  <%= devise_errors_for(:current_password) %>
 	</div>
 
 	<%= f.submit "Update", class: 'btn btn-primary' %>
@@ -52,6 +59,4 @@
       </p>
     </div>
   </div>
-
-  <%= link_to "Back", :back %>
 </div>

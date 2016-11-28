@@ -1,7 +1,11 @@
-<h1>New Goal</h1>
+<%= goals_error_messages! %>
 
-<div class="row">
-  <%= render 'form', goal: @goal %>
+<div class="basic_form">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4><%= t('.new_goal', default: 'New Goal') %></h4>
+    </div>
+    <%= render 'form', goal: @goal %>
+  </div>
+  <%= link_to 'Back', goals_path %>
 </div>
-
-<%= link_to 'Back', goals_path %>

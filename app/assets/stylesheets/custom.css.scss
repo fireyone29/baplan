@@ -1,10 +1,36 @@
 @import "bootstrap";
 
+// map devise's alert classes to real bootstrap ones
 .alert-error {
-    @extend .alert-danger; }
+    @extend .alert-danger;
+}
 
 .alert-alert {
-    @extend .alert-danger; }
+    @extend .alert-danger;
+}
 
 .alert-notice {
-    @extend .alert-info; }
+    @extend .alert-info;
+}
+
+
+// styling for form errors
+.field_with_errors {
+    @extend .has-error;
+    .form-control {
+          color: $state-danger-text;
+    }
+}
+
+#error_explanation {
+    color: $state-danger-text;
+}
+
+
+// provide a base style for all forms
+.basic_form {
+    @extend .col-sm-8;
+    @extend .col-sm-offset-2;
+    @extend .col-lg-6;
+    @extend .col-lg-offset-3;
+}

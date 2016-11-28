@@ -1,6 +1,6 @@
-<div class="col-sm-6 col-sm-offset-3">
-  <%= devise_error_messages! %>
+<%= devise_error_messages! %>
 
+<div class="basic_form">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4><%= t('.resend_unlock', default: 'Resend unlock instructions') %></h4>
@@ -9,8 +9,9 @@
     <div class="panel-body">
       <%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
         <div class="form-group">
-	  <%= f.label :email %>
+	  <%= f.label :email, class: 'control-label' %>
 	  <%= f.email_field :email, autofocus: true, class: 'form-control' %>
+	  <%= devise_errors_for(:email) %>
 	</div>
 
 	<%= f.submit "Resend unlock instructions", class: 'btn btn-primary btn-block btn-lg' %>

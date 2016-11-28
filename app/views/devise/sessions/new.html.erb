@@ -1,4 +1,6 @@
-<div class="col-sm-6 col-sm-offset-3">
+<%= devise_error_messages! %>
+
+<div class="basic_form">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4><%= t('.login', default: 'Login') %></h4>
@@ -7,13 +9,15 @@
     <div class="panel-body">
       <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
         <div class="form-group">
-	  <%= f.label :email %>
+	  <%= f.label :email, class: 'control-label' %>
 	  <%= f.email_field :email, autofocus: true, class: 'form-control' %>
+	  <%= devise_errors_for(:email) %>
 	</div>
 
 	<div class="form-group">
-	  <%= f.label :password %>
+	  <%= f.label :password, class: 'control-label' %>
 	  <%= f.password_field :password, autocomplete: "off", class: 'form-control' %>
+	  <%= devise_errors_for(:password) %>
 	</div>
 
 	<% if devise_mapping.rememberable? -%>
