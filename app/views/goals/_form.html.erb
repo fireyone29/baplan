@@ -12,6 +12,9 @@
       <%= goals_errors_for(:frequency) %>
     </div>
 
-    <%= f.submit class: 'btn btn-primary btn-block btn-lg' %>
+    <div class="" role="group" aria-label="actions">
+      <%= f.submit class: 'btn btn-success btn-lg btn-block', role: 'button' %>
+      <%= link_to 'Cancel', :back, class: 'btn btn-primary btn-lg btn-block', role: 'button' %>
+    </div>
   <% end %>
 </div>

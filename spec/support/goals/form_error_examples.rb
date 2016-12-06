@@ -1,23 +1,32 @@
-RSpec.shared_examples "displays devise form errors" do |fields|
+RSpec.shared_examples "displays goal form errors" do |fields|
   let(:message) { "my error message!" }
+  let(:goal) {
+    FactoryGirl.create(:goal,
+                       description: 'Description',
+                       frequency: 0)
+  }
+
+  before(:each) do
+    assign(:goal, goal)
+  end
 
   fields.each do |field|
     context "error on #{field}" do
       before do
-        resource.errors.add(field, message)
+        goal.errors.add(field, message)
       end
 
       it "highlights the field" do
         render
         assert_select "div[class=?]", "field_with_errors" do
-          assert_select "input[name=?]", "user[#{field}]"
+          assert_select "[name=?]", "goal[#{field}]"
         end
       end
 
       it "displays the error message" do
         render
         assert_select "div[class=?]", "form-group" do
-          assert_select "input[name=?]", "user[#{field}]"
+          assert_select "[name=?]", "goal[#{field}]"
           assert_select "div[class=?]>span", "field_with_errors", {text: /#{message}/i}
         end
       end
@@ -35,7 +44,7 @@ RSpec.shared_examples "displays devise form errors" do |fields|
   context "errors on all fields" do
     before do
       fields.each do |field|
-        resource.errors.add(field, message)
+        goal.errors.add(field, message)
       end
     end
 

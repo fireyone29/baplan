@@ -1,10 +1,11 @@
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-static-top navbar-inverse" role="navigation">
   <div class="container">
-    <div class="navbar-header">
+    <!--removed for prettier behavior on small display
+	div class="navbar-header"-->
       <a class="navbar-brand" href="/">baplan</a>
-    </div>
+    <!--/div-->
 
-    <ul class="nav nav-pills pull-right">
+    <ul class="nav nav-pills navbar-nav navbar-right">
       <%= render "layouts/auth_nav" %>
     </ul>
   </div>

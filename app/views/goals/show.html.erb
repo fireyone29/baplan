@@ -1,12 +1,26 @@
-<p>
-  <strong>Description:</strong>
-  <%= @goal.description %>
-</p>
+<div class="row">
+  <div class="jumbotron">
+    <h1>
+      <small>I will</small>
+      <%= @goal.description %>
+      <%= @goal.frequency %>
+    </h1>
+  </div>
+</div>
 
-<p>
-  <strong>Frequency:</strong>
-  <%= @goal.frequency %>
-</p>
+<div class="row">
+  <%= link_to goals_path, type: 'button', class: 'btn btn-lg btn-primary' do %>
+  Back
+  <% end %>
 
-<%= link_to 'Edit', edit_goal_path(@goal) %> |
-<%= link_to 'Back', goals_path %>
+  <div class="pull-right">
+    <%= link_to edit_goal_path(@goal), type: 'button', class: 'btn btn-lg btn-warning' do %>
+    Edit
+    <% end %>
+
+    <!-- requires javascript enabled in the browser :( -->
+    <%= link_to @goal, method: :delete, data: { confirm: 'Are you sure?' }, type: 'button', class: 'btn btn-lg btn-danger' do %>
+    Delete
+    <% end %>
+  </div>
+</div>

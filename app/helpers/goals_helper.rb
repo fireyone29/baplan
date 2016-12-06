@@ -5,7 +5,7 @@ module GoalsHelper
     count = @goal.errors.count
     html = <<-HTML
       <div class="alert alert-danger">
-        <button type="button" class="close" aria-label="Close">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
         Please fix the #{pluralize(count, "highlighted error")} and try again.
