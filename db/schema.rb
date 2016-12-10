@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161126161145) do
+ActiveRecord::Schema.define(version: 20161210184116) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,16 @@ ActiveRecord::Schema.define(version: 20161126161145) do
     t.datetime "updated_at",              null: false
     t.index ["description", "user_id"], name: "index_goals_on_description_and_user_id", unique: true, using: :btree
     t.index ["user_id"], name: "index_goals_on_user_id", using: :btree
+  end
+
+  create_table "streaks", force: :cascade do |t|
+    t.string  "type"
+    t.integer "goal_id",    null: false
+    t.date    "start_date", null: false
+    t.date    "end_date",   null: false
+    t.index ["end_date"], name: "index_streaks_on_end_date", using: :btree
+    t.index ["goal_id"], name: "index_streaks_on_goal_id", using: :btree
+    t.index ["start_date"], name: "index_streaks_on_start_date", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -51,4 +61,6 @@ ActiveRecord::Schema.define(version: 20161126161145) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true, using: :btree
   end
 
+  add_foreign_key "goals", "users"
+  add_foreign_key "streaks", "goals"
 end

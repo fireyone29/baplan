@@ -5,3 +5,34 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+def create_testing_data
+  password = 'testing'
+  #user with no goals
+  User.create(email: 'empty@example.com',
+              password: password,
+              password_confirmation: password,
+              confirmed_at: Date.today)
+
+  #user with many goals
+  user = User.create(email: 'test@example.com',
+              password: password,
+              password_confirmation: password,
+              confirmed_at: Date.today)
+  1.upto(20) do |i|
+    Goal.create(user_id: user.id,
+                description: "action #{i}",
+                frequency: :daily)
+  end
+
+  #TODO: user_with_streaks
+end
+
+case Rails.env
+when 'production'
+  create_testing_data if ENV['YES_REALLY_PUT_TEST_DATA_IN_PROD'] == 'for real'
+when 'development'
+  create_testing_data
+end
+
+puts "DB successfully seeded"

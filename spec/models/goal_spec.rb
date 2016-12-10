@@ -26,4 +26,16 @@ RSpec.describe Goal, type: :model do
       expect(FactoryGirl.create(:goal, description: goal.description)).to be_valid
     end
   end
+
+  context 'with associated streaks' do
+    let(:goal) { FactoryGirl.create(:goal) }
+    let!(:streak1) { FactoryGirl.create(:streak, goal_id: goal.id) }
+    let!(:streak2) { FactoryGirl.create(:streak, goal_id: goal.id) }
+
+    it 'destroys owned streaks when destroyed' do
+      expect{goal.destroy}.to change(Streak, :count).by(-2)
+      expect{streak1.reload}.to raise_error ActiveRecord::RecordNotFound
+      expect{streak2.reload}.to raise_error ActiveRecord::RecordNotFound
+    end
+  end
 end

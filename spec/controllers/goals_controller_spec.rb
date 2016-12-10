@@ -54,7 +54,7 @@ RSpec.describe GoalsController, type: :controller do
   # GoalsController. Be sure to keep this updated too.
   let(:valid_session) { {} }
 
-  describe "GET #index", :focus do
+  describe "GET #index" do
     let!(:goal) { Goal.create! valid_attributes }
     subject { get :index, params: {} }
 

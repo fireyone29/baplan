@@ -21,3 +21,9 @@
 
 en:
   hello: "Hello world"
+
+  activerecord:
+    errors:
+      models:
+        streak:
+          negative_druation: "Can't have negative duration"
