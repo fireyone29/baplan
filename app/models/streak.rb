@@ -10,15 +10,19 @@ class Streak < ApplicationRecord
   class SplitError < StreakError; end
 
   # The length added to the streak each time you execute on the goal.
-  def period
+  def self.period
     raise NotImplementedError, 'Not available for base Streak.'
+  end
+
+  def period
+    self.class.period
   end
 
   # The length of this streak (inclusive).
   #
   # @return [Integer] length of the streak.
   def length
-    (end_date - start_date).to_i + 1
+    ((end_date - start_date).to_i + 1).days
   end
 
   # Udate this streak with a new execution.
@@ -53,10 +57,10 @@ class Streak < ApplicationRecord
   def unexecute(date)
     if date > self.end_date - period && date <= self.end_date
       self.end_date -= period
-      save
+      save_or_destroy
     elsif date < self.start_date + period && date >= self.start_date
       self.start_date += period
-      save
+      save_or_destroy
     else
       date > self.end_date || date < self.start_date
     end
@@ -73,7 +77,7 @@ class Streak < ApplicationRecord
   #
   # @param other_streak [Streak] The streak to merge into this
   #   one. Destroyed on success.
-  # @param and_execute [Boolean] Execute the day between the two
+  # @param and_execute [Boolean] Execute the period between the two
   #   streaks.
   # @raise [Streak::MergeError] If the merge can not be completed.
   def merge!(other_streak, and_execute: false)
@@ -132,9 +136,19 @@ class Streak < ApplicationRecord
     new_streak
   end
 
+
   private
+
   def positive_streak
     errors.add(:base, :negative_druation) if end_date < start_date
+  end
+
+  def save_or_destroy
+    if self.length < 1.day
+      destroy
+    else
+      save
+    end
   end
 
   # TODO possible way of dealing with months and prettying up code,
@@ -144,17 +158,5 @@ class Streak < ApplicationRecord
   # TODO make class method?
   def add_multiple_of_time(date, time, multiplier = 1)
     (date + (time.seconds * multiplier).seconds).to_date
-  end
-end
-
-class DailyStreak < Streak
-  def period
-    1.day
-  end
-end
-
-class WeeklyStreak < Streak
-  def period
-    1.week
   end
 end

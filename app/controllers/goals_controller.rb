@@ -64,18 +64,18 @@ class GoalsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_authorized_goal
-      @goal = Goal.find(params[:id])
-      # where a particular goal is set, require it to belong to the logged
-      # in user
-      if current_user != @goal.user
-        redirect_to goals_url, alert: 'You do not have access to that!'
-      end
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def goal_params
-      params.require(:goal).permit(:description, :frequency)
+  def set_authorized_goal
+    @goal = Goal.find(params[:id])
+    # where a particular goal is set, require it to belong to the logged
+    # in user
+    if current_user != @goal.user
+      redirect_to goals_url, alert: 'You do not have access to that!'
     end
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def goal_params
+    params.require(:goal).permit(:description, :frequency)
+  end
 end

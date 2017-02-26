@@ -19,14 +19,14 @@ RSpec.shared_examples 'a streak' do |factory|
     context 'with start after end' do
       let(:diff) { 3 }
       it 'calculates inclusive duration' do
-        expect(streak.length).to eql diff + 1
+        expect(streak.length).to eql (diff + 1).days
       end
     end
 
     context 'with the same start and end' do
       let(:diff) { 0 }
       it 'equals one' do
-        expect(streak.length).to eql 1
+        expect(streak.length).to eql 1.days
       end
     end
   end
@@ -172,8 +172,6 @@ RSpec.shared_examples 'splitable streak' do
   end
 end
 
-# For some reason this has to come first so rails actually loads the
-# file we're testing against.
 RSpec.describe Streak, type: :model do
   it_behaves_like 'a streak', :streak
 
@@ -207,8 +205,8 @@ RSpec.describe DailyStreak, type: :model do
 
   describe '#execute' do
     let!(:streak) { FactoryGirl.create(:daily_streak) }
-    let!(:start_date) { streak.start_date }
-    let!(:end_date) { streak.end_date }
+    let(:start_date) { streak.start_date }
+    let(:end_date) { streak.end_date }
 
     context 'with date within the streak' do
       let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date..streak.end_date) }
@@ -252,8 +250,8 @@ RSpec.describe DailyStreak, type: :model do
 
   describe '#unexecute' do
     let!(:streak) { FactoryGirl.create(:daily_streak) }
-    let!(:start_date) { streak.start_date }
-    let!(:end_date) { streak.end_date }
+    let(:start_date) { streak.start_date }
+    let(:end_date) { streak.end_date }
 
     context 'with date inside the streak' do
       let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date+1.day..streak.end_date-1.day) }
@@ -293,6 +291,20 @@ RSpec.describe DailyStreak, type: :model do
         expect(streak.reload.end_date).to eql end_date - 1.day
       end
     end
+
+    context 'when unexecuting the only remaining days' do
+      let!(:streak) { FactoryGirl.create(:daily_streak,
+                                         start_date: Date.today,
+                                         end_date: Date.today) }
+      it 'succeeds' do
+        expect(streak.unexecute(end_date)).to be_truthy
+      end
+
+      it 'destroys the streak' do
+        expect{streak.unexecute(start_date)}.to change{Streak.count}.by(-1)
+        expect{streak.reload}.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
   end
 
   describe '#merge!' do
@@ -329,8 +341,8 @@ RSpec.describe WeeklyStreak, type: :model do
 
   describe '#execute' do
     let!(:streak) { FactoryGirl.create(:weekly_streak) }
-    let!(:start_date) { streak.start_date }
-    let!(:end_date) { streak.end_date }
+    let(:start_date) { streak.start_date }
+    let(:end_date) { streak.end_date }
 
     context 'with date within the streak' do
       let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date..streak.end_date) }
@@ -388,8 +400,8 @@ RSpec.describe WeeklyStreak, type: :model do
 
   describe '#unexecute' do
     let!(:streak) { FactoryGirl.create(:weekly_streak) }
-    let!(:start_date) { streak.start_date }
-    let!(:end_date) { streak.end_date }
+    let(:start_date) { streak.start_date }
+    let(:end_date) { streak.end_date }
 
     context 'with date inside the streak' do
       let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date+1.week..streak.end_date-1.week) }
@@ -427,6 +439,20 @@ RSpec.describe WeeklyStreak, type: :model do
       it 'saves updates to end' do
         expect(streak.unexecute(end_date)).to be_truthy
         expect(streak.reload.end_date).to eql end_date - 1.week
+      end
+    end
+
+    context 'when unexecuting the only remaining days' do
+      let!(:streak) { FactoryGirl.create(:weekly_streak,
+                                         start_date: Date.today - 6.days,
+                                         end_date: Date.today) }
+      it 'succeeds' do
+        expect(streak.unexecute(end_date)).to be_truthy
+      end
+
+      it 'destroys the streak' do
+        expect{streak.unexecute(start_date)}.to change{Streak.count}.by(-1)
+        expect{streak.reload}.to raise_error ActiveRecord::RecordNotFound
       end
     end
   end

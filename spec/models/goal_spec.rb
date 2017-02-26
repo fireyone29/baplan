@@ -38,4 +38,186 @@ RSpec.describe Goal, type: :model do
       expect{streak2.reload}.to raise_error ActiveRecord::RecordNotFound
     end
   end
+
+  describe '#relevant_streaks' do
+    let!(:goal) { FactoryGirl.create(:goal) }
+    let(:date) { Date.today }
+    subject { goal.relevant_streaks(date) }
+
+    context 'with no streaks' do
+      it { is_expected.to be_empty }
+    end
+
+    context 'with streaks from other goals' do
+      before do
+        FactoryGirl.create(:daily_streak)
+      end
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'with streaks not close to date' do
+      let!(:streak) {
+        FactoryGirl.create(:daily_streak,
+                           goal_id: goal.id,
+                           start_date: date - 1.year)
+      }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'weekly goal' do
+      let(:goal) { FactoryGirl.create(:goal, frequency: :weekly) }
+
+      context 'with date one period before streak' do
+        let!(:streak) {
+          FactoryGirl.create(:weekly_streak,
+                             goal_id: goal.id,
+                             start_date: date + 3.days)
+        }
+        it 'returns that streak' do
+          expect(subject).to match_array [streak]
+        end
+      end
+
+      context 'with date one period after streak' do
+        let!(:streak) {
+          FactoryGirl.create(:weekly_streak,
+                             goal_id: goal.id,
+                             start_date: date - 17.days,
+                             end_date: date - 3.days)
+        }
+        it 'returns that streak' do
+          expect(subject).to match_array [streak]
+        end
+      end
+    end
+
+    context 'daily goal' do
+      let(:goal) { FactoryGirl.create(:goal, frequency: :daily) }
+
+      context 'with date one period before streak' do
+        let!(:streak) {
+          FactoryGirl.create(:daily_streak,
+                             goal_id: goal.id,
+                             start_date: date + 1.day)
+        }
+        it 'returns that streak' do
+          expect(subject).to match_array [streak]
+        end
+      end
+
+      context 'with date one period after streak' do
+        let!(:streak) {
+          FactoryGirl.create(:daily_streak,
+                             goal_id: goal.id,
+                             start_date: date - 5.days,
+                             end_date: date - 1.day)
+        }
+        it 'returns that streak' do
+          expect(subject).to match_array [streak]
+        end
+      end
+    end
+
+    context 'with streak containing the date' do
+      let!(:streak) {
+        FactoryGirl.create(:daily_streak,
+                           goal_id: goal.id,
+                           start_date: date - 2.weeks,
+                           end_date: date + 1.week)
+      }
+      it 'returns that streak' do
+        expect(subject).to match_array [streak]
+      end
+    end
+
+    context 'with two relevant steaks' do
+      let(:goal) { FactoryGirl.create(:goal, frequency: :daily) }
+      let!(:streak1) {
+        FactoryGirl.create(:daily_streak,
+                           goal_id: goal.id,
+                           start_date: date - 5.days,
+                           end_date: date - 1.day)
+      }
+      let!(:streak2) {
+        FactoryGirl.create(:daily_streak,
+                           goal_id: goal.id,
+                           start_date: date + 1.day)
+      }
+
+      it 'returns both streaks' do
+        expect(subject).to match_array [streak1, streak2]
+      end
+    end
+
+    context 'with one relevant and one irrelevant streak' do
+      let(:goal) { FactoryGirl.create(:goal, frequency: :daily) }
+      let!(:streak1) {
+        FactoryGirl.create(:daily_streak,
+                           goal_id: goal.id,
+                           start_date: date - 5.days,
+                           end_date: date - 1.day)
+      }
+      let!(:streak2) {
+        FactoryGirl.create(:daily_streak,
+                           goal_id: goal.id,
+                           start_date: date + 1.year)
+      }
+      it 'returns the relevant streak' do
+        expect(subject).to match_array [streak1]
+      end
+    end
+
+    # TODO: I don't have any idea how this should work even in theory
+    context 'with streak type not matching goal frequency' do
+      it 'should something...'
+    end
+  end
+
+  describe '#update_or_create' do
+    let(:date) { Date.today }
+    let!(:goal) { FactoryGirl.create(:goal, frequency: :weekly) }
+    subject { goal.update_or_create!(date) }
+
+    context 'with no relevant streaks' do
+      it 'creates a new streak of the correct type' do
+        expect{subject}.to change{Streak.count}.by(1)
+      end
+
+      it 'has the correct start and end date' do
+        subject
+        streak = Streak.last
+        expect(streak.start_date).to eql date
+        expect(streak.length).to eql 1.week
+      end
+    end
+
+    context 'with one relevant streak' do
+      let(:streak) { double('Streak') }
+
+      before do
+        expect(goal).to receive(:relevant_streaks).with(date).and_return([streak])
+      end
+
+      it 'executes the date on that streak' do
+        expect(streak).to receive(:execute!).with(date)
+        subject
+      end
+    end
+
+    context 'with two relevant streaks' do
+      let(:streak1) { double('Streak1') }
+      let(:streak2) { double('Streak2') }
+
+      before do
+        expect(goal).to receive(:relevant_streaks).with(date).and_return([streak1, streak2])
+      end
+
+      it 'it merges the streaks' do
+        expect(streak1).to receive(:merge!).with(streak2, and_execute: true)
+        subject
+      end
+    end
+  end
 end
