@@ -39,6 +39,34 @@ RSpec.describe Goal, type: :model do
     end
   end
 
+  describe '#latest_streak' do
+    let(:goal) { FactoryGirl.create(:goal) }
+    subject(:latest_streak) { goal.latest_streak }
+
+    context 'with no streaks' do
+      it 'returns nil' do
+        expect(latest_streak).to eq nil
+      end
+    end
+
+    context 'with multiple streaks' do
+      let!(:streak1) { FactoryGirl.create(:streak,
+                                          start_date: 5.days.ago,
+                                          end_date: 1.day.ago,
+                                          goal_id: goal.id)
+      }
+      let!(:streak2) { FactoryGirl.create(:streak,
+                                          start_date: 1.year.ago,
+                                          end_date: 1.week.ago,
+                                          goal_id: goal.id)
+      }
+
+      it 'returns the streak with the most recent end_date' do
+        expect(latest_streak).to eq streak1
+      end
+    end
+  end
+
   describe '#relevant_streaks' do
     let!(:goal) { FactoryGirl.create(:goal) }
     let(:date) { Date.today }

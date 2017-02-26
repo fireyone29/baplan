@@ -66,7 +66,7 @@ class GoalsController < ApplicationController
   private
 
   def set_authorized_goal
-    @goal = Goal.find(params[:id])
+    @goal = Goal.includes(:latest_streak, :user).find(params[:id])
     # where a particular goal is set, require it to belong to the logged
     # in user
     if current_user != @goal.user
