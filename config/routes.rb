@@ -13,6 +13,10 @@ Rails.application.routes.draw do
              }
 
   resources :goals do
-    resources :streaks, only: [:create, :edit, :destroy]
+    get 'streaks/execute', to: 'streaks#execute_form'
+    post 'streaks/execute', to: 'streaks#execute'
+
+    get 'streaks/unexecute', to: 'streaks#unexecute_form'
+    post 'streaks/unexecute', to: 'streaks#unexecute'
   end
 end

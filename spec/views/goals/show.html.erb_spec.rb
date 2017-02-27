@@ -34,4 +34,16 @@ RSpec.describe "goals/show", type: :view do
     render
     assert_select "a[type=button][href=?]", goals_path, text: "Back"
   end
+
+  it "renders an execute button" do
+    render
+    assert_select "a[type=button][href=?]", goal_streaks_execute_path(goal),
+                  text: "Execute"
+  end
+
+  it "renders an unexecute button" do
+    render
+    assert_select "a[type=button][href=?]", goal_streaks_unexecute_path(goal),
+                  text: "Unexecute"
+  end
 end

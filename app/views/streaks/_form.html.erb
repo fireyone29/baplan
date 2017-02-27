@@ -1,0 +1,13 @@
+<div class="panel-body">
+  <%= form_for :streak, url: path do |f| %>
+  <div class="form-group">
+    <%= f.label :date, class: 'control-label' %>
+    <%= select_date %>
+  </div>
+
+  <div class="" role="group" aria-label="actions">
+    <%= f.submit class: 'btn btn-success btn-lg btn-block', role: 'button' %>
+    <%= link_to 'Cancel', :back, class: 'btn btn-primary btn-lg btn-block', role: 'button' %>
+  </div>
+  <% end %>
+</div>

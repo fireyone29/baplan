@@ -16,7 +16,18 @@
   <% end %>
   <div class="list-group">
     <% @goals.each do |goal| %>
-      <%= link_to goal, class: 'list-group-item' do %>
+      <% klass = "list-group-item" %>
+      <% if goal.latest_streak %>
+        <% if goal.latest_streak.current? %>
+          <% klass += " list-group-item-success" %>
+	<% elsif goal.latest_streak.recent? %>
+	  <% klass += " list-group-item-warning" %>
+	<% else %>
+	  <% klass += " list-group-item-danger" %>
+	<% end %>
+      <% end %>
+
+      <%= link_to goal, class: klass do %>
         <h3 class="list-group-item-heading">
 	  <small>I will</small>
 	  <%= goal.description %>

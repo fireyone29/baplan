@@ -25,6 +25,14 @@ class Streak < ApplicationRecord
     ((end_date - start_date).to_i + 1).days
   end
 
+  def current?
+    self.end_date >= Date.today
+  end
+
+  def recent?
+    self.end_date >= Date.today - self.period
+  end
+
   # Udate this streak with a new execution.
   #
   # Only accepts updates which are contiguous with this streak.
