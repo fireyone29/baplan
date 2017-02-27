@@ -1,0 +1,16 @@
+language: ruby
+cache: bundler
+git:
+  depth: 5
+rvm:
+  - 2.3.1
+
+before_script:
+  - psql -c 'create database baplantest;' -U postgres
+  - bundle exec rake db:migrate
+
+test:
+  adapter: postgresql
+  username: postgres
+
+script: bin/rails spec
