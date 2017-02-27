@@ -1,24 +1,24 @@
-# README
+# baplan
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+baplan is a Rails based app to aid in creating and tracking behavioral
+activaion plans.  The basic idea is that you make a commitment to do
+some activities with some frequency and then track your success in
+sticking to the plan.
 
-Things you may want to cover:
+## Setup
 
-* Ruby version
+Install dependencies with
+```
+gem install bundler
+bundle install
+```
 
-* System dependencies
+Get your PG database initialized with
+```
+bin/rails db:setup
+```
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+And run the unit tests with
+```
+bin/rails spec
+```
