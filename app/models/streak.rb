@@ -26,11 +26,11 @@ class Streak < ApplicationRecord
   end
 
   def current?
-    self.end_date >= Date.today
+    self.end_date >= Time.zone.now.to_date
   end
 
   def recent?
-    self.end_date >= Date.today - self.period
+    self.end_date >= Time.zone.now.to_date - self.period
   end
 
   # Udate this streak with a new execution.
