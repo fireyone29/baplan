@@ -2,7 +2,9 @@
   <div class="container">
     <!--removed for prettier behavior on small display
 	div class="navbar-header"-->
-      <a class="navbar-brand" href="/">baplan</a>
+    <a class="navbar-brand" href="/">
+      <%= Rails.application.class.parent_name.downcase %>
+    </a>
     <!--/div-->
 
     <ul class="nav nav-pills navbar-nav navbar-right">

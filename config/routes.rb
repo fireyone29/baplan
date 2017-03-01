@@ -19,4 +19,6 @@ Rails.application.routes.draw do
     get 'streaks/unexecute', to: 'streaks#unexecute_form'
     post 'streaks/unexecute', to: 'streaks#unexecute'
   end
+
+  get 'health', to: 'health#show'
 end
