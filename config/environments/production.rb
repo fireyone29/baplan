@@ -96,5 +96,6 @@ Rails.application.configure do
 
   ActionMailer::Base.delivery_method = :smtp
 
-  config.action_mailer.default_url_options = { :host => ENV['MAILER_APP_URL'] }
+  config.action_mailer.default_url_options = { host: ENV['MAILER_APP_URL'],
+                                               protocol: 'https' }
 end
