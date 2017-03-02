@@ -46,7 +46,7 @@
     <% end %>
 
     <!-- requires javascript enabled in the browser :( -->
-    <%= link_to @goal, method: :delete, data: { confirm: 'Are you sure?' }, type: 'button', class: 'btn btn-lg btn-danger' do %>
+    <%= button_to @goal, method: :delete, data: { confirm: 'Are you sure?' }, type: 'button', class: 'btn btn-lg btn-danger' do %>
     Delete
     <% end %>
   </div>

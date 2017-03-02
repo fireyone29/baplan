@@ -21,8 +21,10 @@ RSpec.describe "goals/show", type: :view do
 
   it "renders a delete button" do
     render
-    assert_select "a[type=button][href=?][data-method=?]", goal_path(goal), "delete",
-                  text: "Delete"
+    assert_select "form[action=?][class=?]", goal_path(goal), "button_to" do
+      assert_select "input[type=hidden][name=?][value=?]", "_method", "delete"
+      assert_select "button", text: "Delete"
+    end
   end
 
   it "renders an edit button" do
