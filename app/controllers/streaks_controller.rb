@@ -2,13 +2,14 @@ class StreaksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_goal
   before_action :set_date, only: [:execute, :unexecute]
+  after_filter :save_previous_url
 
   def execute_form
   end
 
   def execute
     @goal.update_or_create!(@date)
-    redirect_to goal_url(@goal)
+    redirect_to session[:streaks_previous_url]
   end
 
   def unexecute_form
@@ -18,7 +19,7 @@ class StreaksController < ApplicationController
     Streak.where(goal_id: @goal.id)
       .where("start_date <= ? AND end_date >= ?", @date, @date)
       .each { |s| s.split!(@date) }
-    redirect_to goal_url(@goal)
+    redirect_to session[:streaks_previous_url]
   end
 
   private
@@ -43,5 +44,9 @@ class StreaksController < ApplicationController
   rescue ArgumentError => e
     # invalid date, reraise BadRequest
     raise ActionController::BadRequest, e.to_s, e.backtrace
+  end
+
+  def save_previous_url
+    session[:streaks_previous_url] = URI(request.referer || '').path
   end
 end

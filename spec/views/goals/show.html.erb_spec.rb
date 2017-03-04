@@ -19,29 +19,12 @@ RSpec.describe "goals/show", type: :view do
     end
   end
 
-  it "renders a delete button" do
-    render
-    assert_select "form[action=?][class=?]", goal_path(goal), "button_to" do
-      assert_select "input[type=hidden][name=?][value=?]", "_method", "delete"
-      assert_select "button", text: "Delete"
-    end
-  end
-
-  it "renders an edit button" do
-    render
-    assert_select "a[type=button][href=?]", edit_goal_path(goal), text: "Edit"
-  end
-
   it "renders a back button" do
     render
     assert_select "a[type=button][href=?]", goals_path, text: "Back"
   end
 
-  it "renders an execute button" do
-    render
-    assert_select "a[type=button][href=?]", goal_streaks_execute_path(goal),
-                  text: "Execute"
-  end
+  it_behaves_like 'has dropdown with many goal actions'
 
   it "has unexecute option in dropdown" do
     render

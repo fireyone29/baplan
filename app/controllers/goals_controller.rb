@@ -1,6 +1,7 @@
 class GoalsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_authorized_goal, only: [:show, :edit, :update, :destroy]
+  after_filter :save_previous_url, only: [:edit]
 
   # GET /goals
   # GET /goals.json
@@ -44,7 +45,8 @@ class GoalsController < ApplicationController
   def update
     respond_to do |format|
       if @goal.update(goal_params)
-        format.html { redirect_to @goal, notice: 'Goal was successfully updated.' }
+        format.html { redirect_to session[:goals_previous_url],
+                                  notice: 'Goal was successfully updated.' }
         format.json { render :show, status: :ok, location: @goal }
       else
         format.html { render :edit }
@@ -77,5 +79,9 @@ class GoalsController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def goal_params
     params.require(:goal).permit(:description, :frequency)
+  end
+
+  def save_previous_url
+    session[:goals_previous_url] = URI(request.referer || '').path
   end
 end

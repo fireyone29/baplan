@@ -43,30 +43,7 @@
 	<span class="caret"></span>
 	<span class="sr-only">Toggle Dropdown</span>
       </button>
-      <ul class="dropdown-menu">
-	<li>
-	  <%= link_to goal_streaks_execute_path(@goal), type: 'button' do %>
-	    Execute
-	  <% end %>
-	</li>
-	<li>
-	  <%= link_to goal_streaks_unexecute_path(@goal) do %>
-	    Unexecute
-	  <% end %>
-	</li>
-      </ul>
+      <%= render 'dropdown', goal: @goal %>
     </div>
-
-    <%= link_to edit_goal_path(@goal), type: 'button',
-	class: 'btn btn-lg btn-warning' do %>
-      Edit
-    <% end %>
-
-    <!-- requires javascript enabled in the browser :( -->
-    <%= button_to @goal, method: :delete, data: { confirm: 'Are you sure?' },
-	type: 'button', class: 'btn btn-lg btn-danger',
-	form: { style: 'display:inline-block;' } do %>
-      Delete
-    <% end %>
   </div>
 </div>

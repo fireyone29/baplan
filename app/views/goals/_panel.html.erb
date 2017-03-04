@@ -1,0 +1,45 @@
+<% is_current = goal.latest_streak && goal.latest_streak.recent? %>
+<% current_len = is_current ? (goal.latest_streak.length / 1.day.seconds) : 0 %>
+
+<% header_id = "heading_#{goal.id}" %>
+<% collapse_id = "collapse_#{goal.id}" %>
+<% collapse_link = "##{collapse_id}" %>
+
+<% panel_klass = "panel-" %>
+<% if goal.latest_streak %>
+  <% if goal.latest_streak.current? %>
+    <% panel_klass += "success" %>
+  <% elsif goal.latest_streak.recent? %>
+    <% panel_klass += "warning" %>
+  <% else %>
+    <% panel_klass += "danger" %>
+  <% end %>
+<% else %>
+  <% panel_klass += "default" %>
+<% end %>
+
+<div class="panel <%= panel_klass %>">
+  <div class="panel-heading clearfix" role="tab" id="<%=header_id%>">
+    <div class="dropdown pull-right">
+      <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+	<span class="glyphicon glyphicon-menu-hamburger"></span>
+	<span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <%= render 'dropdown', goal:goal %>
+    </div>
+
+    <h4 class="panel-title pull-left">
+      <a role="button" href="<%= collapse_link %>" data-parent="#accordion"
+	 data-toggle="collapse" aria-expanded="true" aria-controls="<%= collapse_id %>">
+	<small>I will</small> <%= goal.description %> <%= goal.frequency %>
+      </a>
+    </h4>
+  </div>
+
+  <div id="<%=collapse_id%>" class="panel-collapse collapse" role="tabpanel"
+       aria-labelledby="<%=header_id%>">
+    <div class="panel-body">
+      Current streak <%= current_len %> days
+    </div>
+  </div>
+</div>

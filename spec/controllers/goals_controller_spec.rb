@@ -158,6 +158,8 @@ RSpec.describe GoalsController, type: :controller do
 
   describe "PUT #update" do
     let!(:goal) { Goal.create! valid_attributes }
+    let(:previous_url) { 'abs123' }
+    let(:session) { {goals_previous_url: previous_url} }
 
     context "with valid params", :signed_in do
       let(:new_description) { 'latest and greatest description' }
@@ -166,7 +168,8 @@ RSpec.describe GoalsController, type: :controller do
           description: new_description
         }
       }
-      subject { put :update, params: {id: goal.to_param, goal: new_attributes} }
+      let(:params) { {id: goal.to_param, goal: new_attributes} }
+      subject { put :update, params: params, session: session }
 
       it "updates the requested goal" do
         subject
@@ -181,7 +184,7 @@ RSpec.describe GoalsController, type: :controller do
 
       it "redirects to the goal" do
         subject
-        expect(response).to redirect_to(goal)
+        expect(response).to redirect_to previous_url
       end
 
       context "with goals from other users" do
@@ -197,7 +200,8 @@ RSpec.describe GoalsController, type: :controller do
     end
 
     context "with invalid params", :signed_in do
-      subject { put :update, params: {id: goal.to_param, goal: invalid_attributes} }
+      let(:params) { {id: goal.to_param, goal: invalid_attributes} }
+      subject { put :update, params: params }
 
       it "assigns the goal as @goal" do
         subject

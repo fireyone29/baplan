@@ -43,15 +43,17 @@ RSpec.describe StreaksController, type: :controller do
     }.merge(additional_params)
   }
   let(:additional_params) { {} }
+  let(:previous_url) { '/abc123' }
+  let(:session) { {streaks_previous_url: previous_url} }
 
   describe "POST #execute" do
     let(:date) { Date.today }
-    subject { post :execute, params: params }
+    subject { post :execute, params: params, session: session }
 
     context 'signed in', :signed_in do
       it "redirects to the relevant goal" do
         subject
-        expect(response).to redirect_to(goal_path(goal))
+        expect(response).to redirect_to previous_url
       end
 
       it 'calls update_or_create' do
@@ -69,12 +71,12 @@ RSpec.describe StreaksController, type: :controller do
   describe "POST #unexecute" do
     let(:date) { streak.end_date }
     let(:additional_params) { {id: streak.to_param} }
-    subject { post :unexecute, params: params }
+    subject { post :unexecute, params: params, session: session }
 
     context 'signed in', :signed_in do
       it "redirects to the relevant goal" do
         subject
-        expect(response).to redirect_to(goal_path(goal))
+        expect(response).to redirect_to previous_url
       end
 
       it "unexecutes the correct date" do

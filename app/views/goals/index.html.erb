@@ -14,27 +14,10 @@
   <% if @goals.empty? %>
     <p class="empty">You have no goals. Try adding one.</p>
   <% end %>
-  <div class="list-group">
-    <% @goals.each do |goal| %>
-      <% klass = "list-group-item" %>
-      <% if goal.latest_streak %>
-        <% if goal.latest_streak.current? %>
-          <% klass += " list-group-item-success" %>
-	<% elsif goal.latest_streak.recent? %>
-	  <% klass += " list-group-item-warning" %>
-	<% else %>
-	  <% klass += " list-group-item-danger" %>
-	<% end %>
-      <% end %>
 
-      <%= link_to goal, class: klass do %>
-        <h3 class="list-group-item-heading">
-	  <small>I will</small>
-	  <%= goal.description %>
-	  <%= goal.frequency %>
-	</h3>
-	<!--p class="list-group-item-text">some extras here? skip count?</p-->
-      <% end %>
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <% @goals.each do |goal| %>
+      <%= render 'panel', goal: goal %>
     <% end %>
   </div>
 </div>

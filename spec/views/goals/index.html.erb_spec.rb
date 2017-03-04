@@ -45,19 +45,16 @@ RSpec.describe "goals/index", type: :view do
 
     it "renders the goal" do
       render
-      assert_select "div.list-group" do
-        assert_select "a.list-group-item > h3.list-group-item-heading",
-                      text: /#{description}/, count: 1
-        assert_select "a.list-group-item > h3.list-group-item-heading",
-                      text: /daily/, count: 1
+      assert_select "div.panel-group>div.panel" do
+        assert_select "div.panel-heading>h4.panel-title" do
+          assert_select "a", count: 1, text: /daily/
+          assert_select "a", count: 1, text: /#{description}/
+        end
       end
     end
 
-    it "renders a link to details" do
-      render
-      assert_select "div.list-group" do
-        assert_select "a.list-group-item[href=?]", goal_path(goal1)
-      end
+    it_behaves_like "has dropdown with many goal actions" do
+      let(:goal) { goal1 }
     end
 
     it_behaves_like "has basic controls"
@@ -70,18 +67,20 @@ RSpec.describe "goals/index", type: :view do
 
     it "renders a list of goals" do
       render
-      assert_select "div.list-group" do
-        assert_select "h3.list-group-item-heading", text: /#{description}/, count: 2
-        assert_select "h3.list-group-item-heading", text: /daily/, count: 2
+      assert_select "div.panel-group>div.panel" do
+        assert_select "div.panel-heading>h4.panel-title" do
+          assert_select "a", count: 2, text: /daily/
+          assert_select "a", count: 2, text: /#{description}/
+        end
       end
     end
 
-    it "renders links to details on entries" do
-     render
-      assert_select "div.list-group" do
-        assert_select "a.list-group-item[href=?]", goal_path(goal1)
-        assert_select "a.list-group-item[href=?]", goal_path(goal2)
-      end
+    it_behaves_like "has dropdown with many goal actions" do
+      let(:goal) { goal1 }
+    end
+
+    it_behaves_like "has dropdown with many goal actions" do
+      let(:goal) { goal2 }
     end
 
     it_behaves_like "has basic controls"

@@ -1,0 +1,38 @@
+<ul class="dropdown-menu">
+  <li>
+    <%= link_to goal_streaks_execute_path(goal), type: 'button' do %>
+      Execute
+    <% end %>
+  </li>
+
+  <li>
+    <%= link_to goal_streaks_unexecute_path(goal) do %>
+      Unexecute
+    <% end %>
+  </li>
+
+  <li>
+    <%= link_to goal_path(goal) do %>
+      Details
+    <% end %>
+  </li>
+
+  <li>
+    <%= link_to edit_goal_path(goal) do %>
+      Edit
+    <% end %>
+  </li>
+
+  <li role="separator" class="divider"></li>
+
+  <li>
+    <!-- requires javascript enabled in the browser :(
+	 remove padding, will add it back on the button -->
+    <a style="padding: 0px;">
+      <%= button_to goal, method: :delete, data: { confirm: 'Are you sure?' },
+	  type: 'button', class: 'btn-dropdown' do %>
+        Delete
+      <% end %>
+    </a>
+  </li>
+</ul>
