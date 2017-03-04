@@ -25,12 +25,4 @@ RSpec.describe "goals/show", type: :view do
   end
 
   it_behaves_like 'has dropdown with many goal actions'
-
-  it "has unexecute option in dropdown" do
-    render
-    assert_select "div[class=btn-group]>ul[class=dropdown-menu]" do
-      assert_select "li>a[href=?]", goal_streaks_unexecute_path(goal),
-                    text: "Unexecute"
-    end
-  end
 end

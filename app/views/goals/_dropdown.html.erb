@@ -1,6 +1,11 @@
-<ul class="dropdown-menu">
+<% unless local_assigns.fetch :align_left, false %>
+  <% align_style = 'text-align: right;' %>
+  <% dropdown_align = 'dropdown-menu-right' %>
+<% end %>
+
+<ul class="dropdown-menu <%= dropdown_align %>" style="<%= align_style %>">
   <li>
-    <%= link_to goal_streaks_execute_path(goal), type: 'button' do %>
+    <%= link_to goal_streaks_execute_path(goal) do %>
       Execute
     <% end %>
   </li>
@@ -30,7 +35,7 @@
 	 remove padding, will add it back on the button -->
     <a style="padding: 0px;">
       <%= button_to goal, method: :delete, data: { confirm: 'Are you sure?' },
-	  type: 'button', class: 'btn-dropdown' do %>
+	  type: 'button', class: 'btn-dropdown', style: align_style do %>
         Delete
       <% end %>
     </a>
