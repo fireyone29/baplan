@@ -2,14 +2,19 @@ class StreaksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_goal
   before_action :set_date, only: [:execute, :unexecute]
-  after_filter :save_previous_url
+  before_action :set_referer_path, only: [:execute, :unexecute]
+  after_action :save_previous_url, only: [:execute_form, :unexecute_form]
 
   def execute_form
   end
 
   def execute
     @goal.update_or_create!(@date)
-    redirect_to session[:streaks_previous_url]
+    if @referer_path == goal_streaks_execute_path(@goal)
+      redirect_to session[:streaks_previous_url]
+    else
+      redirect_to @referer_path
+    end
   end
 
   def unexecute_form
@@ -19,7 +24,11 @@ class StreaksController < ApplicationController
     Streak.where(goal_id: @goal.id)
       .where("start_date <= ? AND end_date >= ?", @date, @date)
       .each { |s| s.split!(@date) }
-    redirect_to session[:streaks_previous_url]
+    if @referer_path == goal_streaks_unexecute_path(@goal)
+      redirect_to session[:streaks_previous_url]
+    else
+      redirect_to @referer_path
+    end
   end
 
   private
@@ -48,5 +57,9 @@ class StreaksController < ApplicationController
 
   def save_previous_url
     session[:streaks_previous_url] = URI(request.referer || '').path
+  end
+
+  def set_referer_path
+    @referer_path = URI(request.referer || '').path
   end
 end

@@ -45,15 +45,40 @@ RSpec.describe StreaksController, type: :controller do
   let(:additional_params) { {} }
   let(:previous_url) { '/abc123' }
   let(:session) { {streaks_previous_url: previous_url} }
+  let(:referer) { nil }
+
+  before do
+    request.env["HTTP_REFERER"] = referer if referer && request && request.env
+  end
 
   describe "POST #execute" do
     let(:date) { Date.today }
     subject { post :execute, params: params, session: session }
 
     context 'signed in', :signed_in do
-      it "redirects to the relevant goal" do
-        subject
-        expect(response).to redirect_to previous_url
+      context 'when referer is execute form' do
+        let(:referer) { goal_streaks_execute_path(goal) }
+
+        it "redirects to the url from session" do
+          subject
+          expect(response).to redirect_to previous_url
+        end
+      end
+
+      context 'when referer is not execute form' do
+        let(:referer) { 'xyz987' }
+
+        it "redirects to the url from session" do
+          subject
+          expect(response).to redirect_to referer
+        end
+      end
+
+      context 'when referer is not set' do
+        it "redirects to root" do
+          subject
+          expect(response).to redirect_to ''
+        end
       end
 
       it 'calls update_or_create' do
@@ -74,9 +99,29 @@ RSpec.describe StreaksController, type: :controller do
     subject { post :unexecute, params: params, session: session }
 
     context 'signed in', :signed_in do
-      it "redirects to the relevant goal" do
-        subject
-        expect(response).to redirect_to previous_url
+      context 'when referer is execute form' do
+        let(:referer) { goal_streaks_unexecute_path(goal) }
+
+        it "redirects to the url from session" do
+          subject
+          expect(response).to redirect_to previous_url
+        end
+      end
+
+      context 'when referer is not execute form' do
+        let(:referer) { 'xyz987' }
+
+        it "redirects to the url from session" do
+          subject
+          expect(response).to redirect_to referer
+        end
+      end
+
+      context 'when referer is not set' do
+        it "redirects to root" do
+          subject
+          expect(response).to redirect_to ''
+        end
       end
 
       it "unexecutes the correct date" do

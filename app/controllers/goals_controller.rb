@@ -1,7 +1,7 @@
 class GoalsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_authorized_goal, only: [:show, :edit, :update, :destroy]
-  after_filter :save_previous_url, only: [:edit]
+  after_action :save_previous_url, only: [:edit]
 
   # GET /goals
   # GET /goals.json
