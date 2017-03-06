@@ -210,7 +210,7 @@ RSpec.describe Goal, type: :model do
 
     context 'with no relevant streaks' do
       it 'creates a new streak of the correct type' do
-        expect{subject}.to change{Streak.count}.by(1)
+        expect{subject}.to change{WeeklyStreak.count}.by(1)
       end
 
       it 'has the correct start and end date' do
@@ -219,32 +219,65 @@ RSpec.describe Goal, type: :model do
         expect(streak.start_date).to eql date
         expect(streak.length).to eql 1.week
       end
+
+      context 'with streak length greater than goal longest streak' do
+        it 'updates goal longest streak' do
+          subject
+          streak = Streak.last
+          expect(goal.reload.longest_streak_length).to eq streak.length
+        end
+      end
     end
 
     context 'with one relevant streak' do
-      let(:streak) { double('Streak') }
+      let(:streak) { FactoryGirl.create(:daily_streak, goal_id: goal.id) }
+      let(:date) { streak.end_date }
+      let(:streak_length) { 0 }
 
       before do
+        allow_any_instance_of(Streak).to receive(:length).and_return(streak_length)
         expect(goal).to receive(:relevant_streaks).with(date).and_return([streak])
       end
 
-      it 'executes the date on that streak' do
+       it 'executes the date on that streak' do
         expect(streak).to receive(:execute!).with(date)
         subject
+      end
+
+      context 'with streak length greater than goal longest streak' do
+        let(:streak_length) { goal.longest_streak_length + 5.days.seconds }
+
+        it 'updates goal longest streak' do
+          subject
+          expect(goal.reload.longest_streak_length).to eq streak_length
+        end
       end
     end
 
     context 'with two relevant streaks' do
-      let(:streak1) { double('Streak1') }
-      let(:streak2) { double('Streak2') }
+      let(:streak1) { FactoryGirl.create(:daily_streak, goal_id: goal.id) }
+      let(:streak2) { FactoryGirl.create(:daily_streak, goal_id: goal.id,
+                                         start_date: streak1.end_date) }
+      let(:streak_length) { 0 }
 
       before do
+        allow_any_instance_of(Streak).to receive(:length).and_return(streak_length)
         expect(goal).to receive(:relevant_streaks).with(date).and_return([streak1, streak2])
       end
 
       it 'it merges the streaks' do
         expect(streak1).to receive(:merge!).with(streak2, and_execute: true)
         subject
+      end
+
+      context 'with streak length greater than goal longest streak' do
+        let(:streak_length) { goal.longest_streak_length + 5.days.seconds }
+
+        it 'updates goal longest streak' do
+          expect(streak1).to receive(:merge!).with(streak2, and_execute: true)
+          subject
+          expect(goal.reload.longest_streak_length).to eq streak_length
+        end
       end
     end
   end

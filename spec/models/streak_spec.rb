@@ -30,6 +30,68 @@ RSpec.shared_examples 'a streak' do |factory|
       end
     end
   end
+
+  describe 'goal longest streak updates' do
+    let!(:goal) { FactoryGirl.create(:goal) }
+
+    context 'when creating first streak' do
+      it 'sets longest streak' do
+        expect(goal.longest_streak_length).to eq 0
+        streak = FactoryGirl.create(factory, goal_id: goal.id)
+        expect(goal.reload.longest_streak_length).to eq streak.length
+      end
+    end
+
+    context 'when updating a streak that is not the longest' do
+      let!(:longest_streak) { FactoryGirl.create(factory, goal_id: goal.id,
+                                                 start_date: 3.years.ago,
+                                                 end_date: 1.year.ago) }
+
+      it 'does not change longest streak' do
+        expect(goal.reload.longest_streak_length).to eq longest_streak.length
+        FactoryGirl.create(factory, goal_id: goal.id,
+                           start_date: 5.days.ago,
+                           end_date: 2.days.ago)
+        expect(goal.reload.longest_streak_length).to eq longest_streak.length
+      end
+    end
+
+    context 'when updating a streak that is the longest' do
+      let!(:streak) { FactoryGirl.create(factory, goal_id: goal.id,
+                                        start_date: Date.today-length+1.day,
+                                        end_date: Date.today) }
+      let(:length) { 25.days }
+      let(:change) { 4.day }
+
+      context 'when increasing length' do
+        it 'increases the longest streak length' do
+          expect(goal.reload.longest_streak_length).to eq length
+          streak.update_attribute(:end_date, Date.today + change)
+          expect(goal.reload.longest_streak_length).to eq (length + change)
+        end
+      end
+
+      context 'when descreasing length' do
+        it 'decreases the longest streak length' do
+          expect(goal.reload.longest_streak_length).to eq length
+          streak.update_attribute(:end_date, Date.today - change)
+          expect(goal.reload.longest_streak_length).to eq (length - change)
+        end
+
+        context 'when it no longer the longest' do
+          let!(:streak2) { FactoryGirl.create(factory, goal_id: goal.id,
+                                              start_date: Date.today-length+2.days,
+                                              end_date: Date.today) }
+
+          it 'does not decrease the longest streak length' do
+            expect(goal.reload.longest_streak_length).to eq length
+            streak.update_attribute(:end_date, Date.today - change)
+            expect(goal.reload.longest_streak_length).to eq streak2.length
+          end
+        end
+      end
+    end
+  end
 end
 
 RSpec.shared_examples 'mergeable streak' do
@@ -304,6 +366,12 @@ RSpec.describe DailyStreak, type: :model do
         expect{streak.unexecute(start_date)}.to change{Streak.count}.by(-1)
         expect{streak.reload}.to raise_error ActiveRecord::RecordNotFound
       end
+
+      it 'resets longest streak to zero' do
+        expect(streak.goal.reload.longest_streak_length).to eq streak.length
+        streak.unexecute(start_date)
+        expect(streak.goal.reload.longest_streak_length).to eq 0
+      end
     end
   end
 
@@ -453,6 +521,12 @@ RSpec.describe WeeklyStreak, type: :model do
       it 'destroys the streak' do
         expect{streak.unexecute(start_date)}.to change{Streak.count}.by(-1)
         expect{streak.reload}.to raise_error ActiveRecord::RecordNotFound
+      end
+
+      it 'resets longest streak to zero' do
+        expect(streak.goal.reload.longest_streak_length).to eq streak.length
+        streak.unexecute(start_date)
+        expect(streak.goal.reload.longest_streak_length).to eq 0
       end
     end
   end

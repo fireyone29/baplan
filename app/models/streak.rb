@@ -5,6 +5,9 @@ class Streak < ApplicationRecord
   validates :end_date, presence: true
   validate :positive_streak
 
+  after_save :update_longest_streak
+  after_destroy :check_longest_streak
+
   class StreakError < StandardError; end
   class MergeError < StreakError; end
   class SplitError < StreakError; end
@@ -22,15 +25,15 @@ class Streak < ApplicationRecord
   #
   # @return [Integer] length of the streak.
   def length
-    ((end_date - start_date).to_i + 1).days
+    date_difference(start_date, end_date) + 1.day
   end
 
   def current?
-    self.end_date >= Time.zone.now.to_date
+    end_date >= Time.zone.now.to_date
   end
 
   def recent?
-    self.end_date >= Time.zone.now.to_date - self.period
+    end_date >= Time.zone.now.to_date - period
   end
 
   # Udate this streak with a new execution.
@@ -40,14 +43,14 @@ class Streak < ApplicationRecord
   # @param date [Date] The date of the execution.
   # @return [Boolean] True if successful.
   def execute(date)
-    if date <= self.end_date + period && date > self.end_date
+    if date <= end_date + period && date > end_date
       self.end_date += period
       save
-    elsif date >= self.start_date - period && date < self.start_date
+    elsif date >= start_date - period && date < start_date
       self.start_date -= period
       save
     else
-      date <= self.end_date && date >= self.start_date
+      date <= end_date && date >= start_date
     end
   end
 
@@ -63,14 +66,14 @@ class Streak < ApplicationRecord
   # @param date [Date] The date of the execution to be undone.
   # @return [Boolean] True if successful.
   def unexecute(date)
-    if date > self.end_date - period && date <= self.end_date
+    if date > end_date - period && date <= end_date
       self.end_date -= period
       save_or_destroy
-    elsif date < self.start_date + period && date >= self.start_date
+    elsif date < start_date + period && date >= start_date
       self.start_date += period
       save_or_destroy
     else
-      date > self.end_date || date < self.start_date
+      date > end_date || date < start_date
     end
   end
 
@@ -98,9 +101,9 @@ class Streak < ApplicationRecord
     # that time
     gap = and_execute ? (period + period) : period
 
-    if other_streak.end_date == self.start_date - gap
+    if other_streak.end_date == start_date - gap
       self.start_date = other_streak.start_date
-    elsif other_streak.start_date == self.end_date + gap
+    elsif other_streak.start_date == end_date + gap
       self.end_date = other_streak.end_date
     else
       raise MergeError, 'Range is disjoint.'
@@ -122,21 +125,21 @@ class Streak < ApplicationRecord
   #   nil.
   # @raise [SplitError] If date is not within the streak.
   def split!(date)
-    if (date < self.start_date + period && date >= self.start_date) ||
-       (date > self.end_date - period && date <= self.end_date)
+    if (date < start_date + period && date >= start_date) ||
+       (date > end_date - period && date <= end_date)
       return unexecute!(date)
-    elsif date < self.start_date || date > self.end_date
+    elsif date < start_date || date > end_date
       raise SplitError, 'Invalid split'
     end
 
     # Needs to find where to start the split (e.g. for weekly streaks)
-    days_to_start = (date - self.start_date).to_i.days
+    days_to_start = (date - start_date).to_i.days
     periods = days_to_start / period
-    new_end = add_multiple_of_time(self.start_date, period, periods)
+    new_end = add_multiple_of_time(start_date, period, periods)
     new_streak = nil
     transaction do
-      new_streak = self.class.create!(goal_id: self.goal_id,
-                                      start_date: self.start_date,
+      new_streak = self.class.create!(goal_id: goal_id,
+                                      start_date: start_date,
                                       end_date: new_end)
       self.start_date = new_end + period
       save!
@@ -151,12 +154,44 @@ class Streak < ApplicationRecord
     errors.add(:base, :negative_druation) if end_date < start_date
   end
 
+  # If the streak has been updated to have no length, just deleted
+  # since it contains no information. Otherwise, save.
   def save_or_destroy
-    if self.length < 1.day
+    if length < 1.day
       destroy
     else
       save
     end
+  end
+
+  # On an update, set the goal's longest streak length if necessary.
+  def update_longest_streak
+    if length > goal.longest_streak_length
+      return goal.update_attribute(:longest_streak_length, length)
+    end
+
+    check_longest_streak
+  end
+
+  # Handle updating the goal's longest streak when streak length has
+  # been reduced (e.g. by destroying this streak).
+  def check_longest_streak
+    old_length = 0
+    if start_date_was && end_date_was
+      old_length = date_difference(start_date_was, end_date_was) + 1.day
+    end
+
+    if old_length > 0 && length < goal.longest_streak_length &&
+       old_length == goal.longest_streak_length
+      # this streak might have been the longest streak, which would
+      # mean we need to reduce the longest streak... resync longest
+      # streak length
+      goal.reset_longest_streak
+    end
+  end
+
+  def date_difference(sdate, edate)
+    (edate - sdate).to_i.days
   end
 
   # TODO possible way of dealing with months and prettying up code,

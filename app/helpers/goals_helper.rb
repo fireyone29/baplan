@@ -27,4 +27,17 @@ module GoalsHelper
 
     html.html_safe
   end
+
+  # Return the length, in days, of the current streak of the given
+  # goal.
+  #
+  # @param goal [Goal] The goal to read from.
+  # @return [FixNum] Length in days of the current streak.
+  def current_length(goal)
+    if goal.latest_streak && goal.latest_streak.recent?
+      goal.latest_streak.length / 1.day.seconds
+    else
+      0
+    end
+  end
 end
