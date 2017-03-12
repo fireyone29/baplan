@@ -41,6 +41,7 @@ gem 'bootstrap-sass'
 # gem 'capistrano-rails', group: :development
 
 group :test do
+  gem 'bundler-audit'
   gem 'database_cleaner'
   gem 'factory_girl_rails'
   gem 'forgery'
