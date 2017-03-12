@@ -31,5 +31,8 @@ module Baplan
     # Configure SSL options to enable HSTS with subdomains. Previous
     # versions had false.
     Rails.application.config.ssl_options = { hsts: { subdomains: true } }
+
+    # Devise should not use secure cookies by default.
+    config.devise_rememberable_opt = {}
   end
 end
