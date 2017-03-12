@@ -4,13 +4,11 @@ Rails.application.routes.draw do
   authenticated :user do
     root 'goals#index', as: :authenticated_root
   end
-  root "home#index"
+  root 'home#index'
 
-  devise_for :users, path_names: {
-               sign_in: 'login',
-               sign_out: 'logout',
-               edit: 'settings'
-             }
+  devise_for :users, path_names: { sign_in: 'login',
+                                   sign_out: 'logout',
+                                   edit: 'settings' }
 
   resources :goals do
     get 'streaks/execute', to: 'streaks#execute_form'

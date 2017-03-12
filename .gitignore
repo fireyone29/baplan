@@ -18,3 +18,8 @@
 
 # Ignore RSpec outputs
 spec/examples.txt
+coverage
+
+# Ignore Yard outputs
+/.yardoc/*
+/doc/*

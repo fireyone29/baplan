@@ -39,7 +39,7 @@ RSpec.shared_examples 'has dropdown with many goal actions' do
     render
     assert_select 'ul' do
       assert_select ":match('class', ?)", /dropdown-menu/
-      assert_select 'li>a>form[method=?][action=?]', 'post',  goal_path(goal) do
+      assert_select 'li>a>form[method=?][action=?]', 'post', goal_path(goal) do
         assert_select 'input[name=?][value=?]', '_method', 'delete'
         assert_select 'button[data-confirm][type=?]', 'submit', text: 'Delete'
       end

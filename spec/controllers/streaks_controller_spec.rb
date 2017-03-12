@@ -27,7 +27,7 @@ RSpec.shared_examples 'handles invalid streak params' do
   it 'rejects request with invalid date' do
     params[:date] = { year: 2017.to_s,
                       month: 2.to_s,
-                      date: 41.to_s }  # Feb doesn't have 41 days...
+                      date: 41.to_s } # Feb doesn't have 41 days...
     expect{subject}.to raise_error(ActionController::BadRequest)
   end
 end
@@ -39,27 +39,27 @@ RSpec.describe StreaksController, type: :controller do
   let(:params) {
     {
       goal_id: goal.to_param,
-      date: date_to_hash(date),
+      date: date_to_hash(date)
     }.merge(additional_params)
   }
   let(:additional_params) { {} }
   let(:previous_url) { '/abc123' }
-  let(:session) { {streaks_previous_url: previous_url} }
+  let(:session) { { streaks_previous_url: previous_url } }
   let(:referer) { nil }
 
   before do
-    request.env["HTTP_REFERER"] = referer if referer && request && request.env
+    request.env['HTTP_REFERER'] = referer if referer && request && request.env
   end
 
-  describe "POST #execute" do
-    let(:date) { Date.today }
+  describe 'POST #execute' do
+    let(:date) { Time.zone.today }
     subject { post :execute, params: params, session: session }
 
     context 'signed in', :signed_in do
       context 'when referer is execute form' do
         let(:referer) { goal_streaks_execute_path(goal) }
 
-        it "redirects to the url from session" do
+        it 'redirects to the url from session' do
           subject
           expect(response).to redirect_to previous_url
         end
@@ -68,14 +68,14 @@ RSpec.describe StreaksController, type: :controller do
       context 'when referer is not execute form' do
         let(:referer) { 'xyz987' }
 
-        it "redirects to the url from session" do
+        it 'redirects to the url from session' do
           subject
           expect(response).to redirect_to referer
         end
       end
 
       context 'when referer is not set' do
-        it "redirects to root" do
+        it 'redirects to root' do
           subject
           expect(response).to redirect_to ''
         end
@@ -87,22 +87,22 @@ RSpec.describe StreaksController, type: :controller do
         subject
       end
 
-      it_behaves_like "handles invalid streak params"
+      it_behaves_like 'handles invalid streak params'
     end
 
-    it_behaves_like "rejects unauthorized access"
+    it_behaves_like 'rejects unauthorized access'
   end
 
-  describe "POST #unexecute" do
+  describe 'POST #unexecute' do
     let(:date) { streak.end_date }
-    let(:additional_params) { {id: streak.to_param} }
+    let(:additional_params) { { id: streak.to_param } }
     subject { post :unexecute, params: params, session: session }
 
     context 'signed in', :signed_in do
       context 'when referer is execute form' do
         let(:referer) { goal_streaks_unexecute_path(goal) }
 
-        it "redirects to the url from session" do
+        it 'redirects to the url from session' do
           subject
           expect(response).to redirect_to previous_url
         end
@@ -111,27 +111,27 @@ RSpec.describe StreaksController, type: :controller do
       context 'when referer is not execute form' do
         let(:referer) { 'xyz987' }
 
-        it "redirects to the url from session" do
+        it 'redirects to the url from session' do
           subject
           expect(response).to redirect_to referer
         end
       end
 
       context 'when referer is not set' do
-        it "redirects to root" do
+        it 'redirects to root' do
           subject
           expect(response).to redirect_to ''
         end
       end
 
-      it "unexecutes the correct date" do
+      it 'unexecutes the correct date' do
         subject
         expect(streak.reload.start_date.to_s).not_to eql date
       end
 
-      it_behaves_like "handles invalid streak params"
+      it_behaves_like 'handles invalid streak params'
     end
 
-    it_behaves_like "rejects unauthorized access"
+    it_behaves_like 'rejects unauthorized access'
   end
 end

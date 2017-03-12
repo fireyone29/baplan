@@ -7,6 +7,6 @@ FactoryGirl.define do
     email { Forgery(:internet).email_address }
     password { my_password }
     password_confirmation { my_password }
-    confirmed_at { Date.today }
+    confirmed_at { Time.zone.today }
   end
 end

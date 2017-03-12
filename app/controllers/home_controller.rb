@@ -1,4 +1,7 @@
+# Controllers for the Home view.
+#
+# Probably won't be anything here.
 class HomeController < ApplicationController
-  def index
-  end
+  # No-op controller backing the index view.
+  def index(); end
 end

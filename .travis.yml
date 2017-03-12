@@ -13,4 +13,4 @@ test:
   adapter: postgresql
   username: postgres
 
-script: bin/rails spec
+script: bin/rails verify

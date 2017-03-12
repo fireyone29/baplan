@@ -1,30 +1,18 @@
+# Helpers for devise views.
 module DeviseHelper
+  # Render an alert with the number of errors in the form.
+  #
+  # @return [String] HTML for the alert banner.
   def devise_error_messages!
     return '' if resource.errors.empty?
-
-    count = resource.errors.count
-    html = <<-HTML
-      <div class="alert alert-danger">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        Please fix the #{pluralize(count, "highlighted error")} and try again.
-      </div>
-    HTML
-
-    html.html_safe
+    render 'shared/form_error_alert', count: resource.errors.count
   end
 
+  # Render an error on a particular form field.
+  #
+  # @return [String] HTML for displaying an error on a field.
   def devise_errors_for(field_name)
     return '' if resource.errors[field_name].empty?
-
-    messages = resource.errors[field_name].map{ |msg| msg.humanize }.join(", ")
-    html = <<-HTML
-      <div class="field_with_errors"><span class="help-block">
-        #{messages}
-      </span></div>
-    HTML
-
-    html.html_safe
+    render 'shared/form_field_error', messages: resource.errors[field_name]
   end
 end

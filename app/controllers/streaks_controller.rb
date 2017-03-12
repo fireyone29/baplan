@@ -1,3 +1,4 @@
+# Controllers for manipulating streaks.
 class StreaksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_goal
@@ -5,9 +6,7 @@ class StreaksController < ApplicationController
   before_action :set_referer_path, only: [:execute, :unexecute]
   after_action :save_previous_url, only: [:execute_form, :unexecute_form]
 
-  def execute_form
-  end
-
+  # Update the goal with an execution on the provided date.
   def execute
     @goal.update_or_create!(@date)
     if @referer_path == goal_streaks_execute_path(@goal)
@@ -17,12 +16,10 @@ class StreaksController < ApplicationController
     end
   end
 
-  def unexecute_form
-  end
-
+  # Update the goal with an unexecution on the provided date.
   def unexecute
     Streak.where(goal_id: @goal.id)
-      .where("start_date <= ? AND end_date >= ?", @date, @date)
+      .where('start_date <= ? AND end_date >= ?', @date, @date)
       .each { |s| s.split!(@date) }
     if @referer_path == goal_streaks_unexecute_path(@goal)
       redirect_to session[:streaks_previous_url]
@@ -31,19 +28,28 @@ class StreaksController < ApplicationController
     end
   end
 
+  # No-op backer for the execute form route
+  def execute_form(); end
+
+  # No-op backer for the unexecute form route
+  def unexecute_form(); end
+
   private
 
+  # Make the relevant goal available.
+  #
+  # Alert and redirect if the goal doesn't belong to the user.
   def set_goal
     params.require(:goal_id)
     @goal = Goal.find(params[:goal_id])
 
-    # where a particular goal is set, require it to belong to the logged
-    # in user
-    if current_user != @goal.user
-      redirect_to goals_url, alert: 'You do not have access to that!'
-    end
+    # where a particular goal is set, require it to belong to the
+    # logged in user
+    opts = { alert: 'You do not have access to that!' }
+    redirect_to(goals_url, opts) unless current_user == @goal.user
   end
 
+  # Make the relevant date available from parameters.
   def set_date
     # probably not worth setting date here, browser should have
     # provided it so there aren't TZ schenanigans.
@@ -55,10 +61,12 @@ class StreaksController < ApplicationController
     raise ActionController::BadRequest, e.to_s, e.backtrace
   end
 
+  # Save the referrer from the form controllers.
   def save_previous_url
     session[:streaks_previous_url] = URI(request.referer || '').path
   end
 
+  # Save the referrer.
   def set_referer_path
     @referer_path = URI(request.referer || '').path
   end

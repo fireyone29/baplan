@@ -6,7 +6,8 @@ RSpec.describe Goal, type: :model do
   end
 
   it 'only allows valid frequencies' do
-    expect{FactoryGirl.build(:goal, frequency: -1)}.to raise_error(ArgumentError)
+    expect{FactoryGirl.build(:goal, frequency: -1)}
+      .to raise_error(ArgumentError)
   end
 
   it 'does not allow empty descriptions' do
@@ -17,13 +18,16 @@ RSpec.describe Goal, type: :model do
     let!(:goal) { FactoryGirl.create(:goal) }
 
     it 'does not allow duplicate descriptions for the same user' do
-      expect(
-        FactoryGirl.build(:goal, user_id: goal.user.id, description: goal.description)
-      ).not_to be_valid
+      new_goal = FactoryGirl.build(:goal,
+                                   user_id: goal.user.id,
+                                   description: goal.description)
+
+      expect(new_goal).not_to be_valid
     end
 
     it 'allows the same description on different users' do
-      expect(FactoryGirl.create(:goal, description: goal.description)).to be_valid
+      new_goal = FactoryGirl.create(:goal, description: goal.description)
+      expect(new_goal).to be_valid
     end
   end
 
@@ -50,15 +54,17 @@ RSpec.describe Goal, type: :model do
     end
 
     context 'with multiple streaks' do
-      let!(:streak1) { FactoryGirl.create(:streak,
-                                          start_date: 5.days.ago,
-                                          end_date: 1.day.ago,
-                                          goal_id: goal.id)
+      let!(:streak1) {
+        FactoryGirl.create(:streak,
+                           start_date: 5.days.ago,
+                           end_date: 1.day.ago,
+                           goal_id: goal.id)
       }
-      let!(:streak2) { FactoryGirl.create(:streak,
-                                          start_date: 1.year.ago,
-                                          end_date: 1.week.ago,
-                                          goal_id: goal.id)
+      let!(:streak2) {
+        FactoryGirl.create(:streak,
+                           start_date: 1.year.ago,
+                           end_date: 1.week.ago,
+                           goal_id: goal.id)
       }
 
       it 'returns the streak with the most recent end_date' do
@@ -69,7 +75,7 @@ RSpec.describe Goal, type: :model do
 
   describe '#relevant_streaks' do
     let!(:goal) { FactoryGirl.create(:goal) }
-    let(:date) { Date.today }
+    let(:date) { Time.zone.today }
     subject { goal.relevant_streaks(date) }
 
     context 'with no streaks' do
@@ -204,7 +210,7 @@ RSpec.describe Goal, type: :model do
   end
 
   describe '#update_or_create' do
-    let(:date) { Date.today }
+    let(:date) { Time.zone.today }
     let!(:goal) { FactoryGirl.create(:goal, frequency: :weekly) }
     subject { goal.update_or_create!(date) }
 
@@ -235,11 +241,13 @@ RSpec.describe Goal, type: :model do
       let(:streak_length) { 0 }
 
       before do
-        allow_any_instance_of(Streak).to receive(:length).and_return(streak_length)
-        expect(goal).to receive(:relevant_streaks).with(date).and_return([streak])
+        allow_any_instance_of(Streak).to receive(:length)
+                                          .and_return(streak_length)
+        expect(goal).to receive(:relevant_streaks)
+                         .with(date).and_return([streak])
       end
 
-       it 'executes the date on that streak' do
+      it 'executes the date on that streak' do
         expect(streak).to receive(:execute!).with(date)
         subject
       end
@@ -256,13 +264,18 @@ RSpec.describe Goal, type: :model do
 
     context 'with two relevant streaks' do
       let(:streak1) { FactoryGirl.create(:daily_streak, goal_id: goal.id) }
-      let(:streak2) { FactoryGirl.create(:daily_streak, goal_id: goal.id,
-                                         start_date: streak1.end_date) }
+      let(:streak2) {
+        FactoryGirl.create(:daily_streak,
+                           goal_id: goal.id,
+                           start_date: streak1.end_date)
+      }
       let(:streak_length) { 0 }
 
       before do
-        allow_any_instance_of(Streak).to receive(:length).and_return(streak_length)
-        expect(goal).to receive(:relevant_streaks).with(date).and_return([streak1, streak2])
+        allow_any_instance_of(Streak).to receive(:length)
+                                          .and_return(streak_length)
+        expect(goal).to receive(:relevant_streaks).with(date)
+                         .and_return([streak1, streak2])
       end
 
       it 'it merges the streaks' do

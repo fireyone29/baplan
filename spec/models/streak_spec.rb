@@ -1,32 +1,36 @@
 require 'rails_helper'
 
 RSpec.shared_examples 'a streak' do |factory|
+  let(:today) { Time.zone.today }
   it 'must be associated with a gaol' do
     expect(FactoryGirl.build(factory, goal_id: nil)).not_to be_valid
   end
 
   it 'rejects negative streaks' do
-    expect(FactoryGirl.build(factory, start_date: Date.today, end_date: Date.today-1)).not_to be_valid
+    params = { start_date: today, end_date: today - 1 }
+    expect(FactoryGirl.build(factory, params)).not_to be_valid
   end
 
   it 'allows same day streaks' do
-    expect(FactoryGirl.build(factory, start_date: Date.today, end_date: Date.today)).to be_valid
+    params = { start_date: today, end_date: today }
+    expect(FactoryGirl.build(factory, params)).to be_valid
   end
 
   describe '#length' do
-    let(:streak) { FactoryGirl.build(factory, start_date: Date.today-diff, end_date: Date.today) }
+    let(:params) { { start_date: today - diff, end_date: today } }
+    let(:streak) { FactoryGirl.build(factory, params)}
 
     context 'with start after end' do
       let(:diff) { 3 }
       it 'calculates inclusive duration' do
-        expect(streak.length).to eql (diff + 1).days
+        expect(streak.length).to eql((diff + 1).days)
       end
     end
 
     context 'with the same start and end' do
       let(:diff) { 0 }
       it 'equals one' do
-        expect(streak.length).to eql 1.days
+        expect(streak.length).to eql 1.day
       end
     end
   end
@@ -43,13 +47,17 @@ RSpec.shared_examples 'a streak' do |factory|
     end
 
     context 'when updating a streak that is not the longest' do
-      let!(:longest_streak) { FactoryGirl.create(factory, goal_id: goal.id,
-                                                 start_date: 3.years.ago,
-                                                 end_date: 1.year.ago) }
+      let!(:longest_streak) {
+        FactoryGirl.create(factory,
+                           goal_id: goal.id,
+                           start_date: 3.years.ago,
+                           end_date: 1.year.ago)
+      }
 
       it 'does not change longest streak' do
         expect(goal.reload.longest_streak_length).to eq longest_streak.length
-        FactoryGirl.create(factory, goal_id: goal.id,
+        FactoryGirl.create(factory,
+                           goal_id: goal.id,
                            start_date: 5.days.ago,
                            end_date: 2.days.ago)
         expect(goal.reload.longest_streak_length).to eq longest_streak.length
@@ -57,39 +65,88 @@ RSpec.shared_examples 'a streak' do |factory|
     end
 
     context 'when updating a streak that is the longest' do
-      let!(:streak) { FactoryGirl.create(factory, goal_id: goal.id,
-                                        start_date: Date.today-length+1.day,
-                                        end_date: Date.today) }
+      let!(:streak) {
+        FactoryGirl.create(factory,
+                           goal_id: goal.id,
+                           start_date: today - length + 1.day,
+                           end_date: today)
+      }
       let(:length) { 25.days }
-      let(:change) { 4.day }
+      let(:change) { 4.days }
 
       context 'when increasing length' do
         it 'increases the longest streak length' do
           expect(goal.reload.longest_streak_length).to eq length
-          streak.update_attribute(:end_date, Date.today + change)
-          expect(goal.reload.longest_streak_length).to eq (length + change)
+          streak.end_date = today + change
+          streak.save!
+          expect(goal.reload.longest_streak_length).to eq(length + change)
         end
       end
 
       context 'when descreasing length' do
         it 'decreases the longest streak length' do
           expect(goal.reload.longest_streak_length).to eq length
-          streak.update_attribute(:end_date, Date.today - change)
-          expect(goal.reload.longest_streak_length).to eq (length - change)
+          streak.end_date = today - change
+          streak.save!
+          expect(goal.reload.longest_streak_length).to eq(length - change)
         end
 
         context 'when it no longer the longest' do
-          let!(:streak2) { FactoryGirl.create(factory, goal_id: goal.id,
-                                              start_date: Date.today-length+2.days,
-                                              end_date: Date.today) }
+          let!(:streak2) {
+            FactoryGirl.create(factory,
+                               goal_id: goal.id,
+                               start_date: today - length + 2.days,
+                               end_date: today)
+          }
 
           it 'does not decrease the longest streak length' do
             expect(goal.reload.longest_streak_length).to eq length
-            streak.update_attribute(:end_date, Date.today - change)
+            streak.end_date = today - change
+            streak.save!
             expect(goal.reload.longest_streak_length).to eq streak2.length
           end
         end
       end
+    end
+  end
+end
+
+RSpec.shared_examples 'non-abstract streak' do |factory|
+  let(:streak) {
+    FactoryGirl.build(factory,
+                      end_date: end_date,
+                      start_date: end_date - 3.days)
+  }
+
+  describe '#recent?' do
+    subject { streak.recent? }
+
+    context 'without a recent end_date' do
+      let(:end_date) { Time.zone.today - described_class.period * 2 }
+
+      it { is_expected.to be false }
+    end
+
+    context 'with a recent end_date' do
+      let(:end_date) { Time.zone.today - described_class.period }
+
+      it { is_expected.to be true }
+    end
+  end
+
+  describe '#current?' do
+    subject { streak.current? }
+
+    context 'without a current end_date' do
+      let(:end_date) { Time.zone.today - described_class.period }
+
+      it { is_expected.to be false }
+    end
+
+    context 'with a current end_date' do
+      let(:end_date) { Time.zone.today + 1.day }
+
+      it { is_expected.to be true }
     end
   end
 end
@@ -101,7 +158,7 @@ RSpec.shared_examples 'mergeable streak' do
   context 'with other type of streak' do
     let(:other_streak) { FactoryGirl.create(:streak) }
     it 'raises a merge error' do
-      expect{streak.merge!(other_streak)}.to raise_error(Streak::MergeError)
+      expect{streak.merge!(other_streak)}.to raise_error(Streak::UpdateError)
     end
   end
 
@@ -145,7 +202,7 @@ RSpec.shared_examples 'mergeable streak' do
 
   context 'with disjoint streaks' do
     it 'rejects unmergeable combinations' do
-      expect{streak.merge!(disjoint_streak)}.to raise_error(Streak::MergeError)
+      expect{streak.merge!(disjoint_streak)}.to raise_error(Streak::UpdateError)
       expect{disjoint_streak.reload}.not_to raise_error
       expect(streak.reload.start_date).to eql start_date
     end
@@ -165,11 +222,13 @@ RSpec.shared_examples 'splitable streak' do
 
   context 'with date outside the streak' do
     it 'rejects days before' do
-      expect{streak.split!(streak.start_date - 2.days)}.to raise_error(Streak::SplitError)
+      expect{streak.split!(streak.start_date - 2.days)}
+        .to raise_error(Streak::UpdateError)
     end
 
     it 'rejects days after' do
-      expect{streak.split!(streak.end_date + 2.days)}.to raise_error(Streak::SplitError)
+      expect{streak.split!(streak.end_date + 2.days)}
+        .to raise_error(Streak::UpdateError)
     end
   end
 
@@ -202,8 +261,8 @@ RSpec.shared_examples 'splitable streak' do
       streaks = Streak.order('start_date')
       expect(streaks.count).to eql 2
       expect(streaks.first.start_date).to eql start_date
-      # TODO end_date?!?!?
-      # TODO start_date?!?!?!
+      # TODO: end_date?!?!?
+      # TODO: start_date?!?!?!
       expect(streaks.last.end_date).to eql end_date
     end
 
@@ -239,31 +298,36 @@ RSpec.describe Streak, type: :model do
 
   describe '#execute' do
     it 'raises NotImplementedError' do
-      expect{FactoryGirl.build(:streak).execute(Date.today)}.to raise_error(NotImplementedError)
+      expect{FactoryGirl.build(:streak).execute(Time.zone.today)}
+        .to raise_error(NotImplementedError)
     end
   end
 
   describe '#unexecute' do
     it 'raises NotImplementedError' do
-      expect{FactoryGirl.build(:streak).unexecute(Date.today)}.to raise_error(NotImplementedError)
+      expect{FactoryGirl.build(:streak).unexecute(Time.zone.today)}
+        .to raise_error(NotImplementedError)
     end
   end
 
   describe '#merge!' do
     it 'raises NotImplementedError' do
-      expect{FactoryGirl.build(:streak).merge!(FactoryGirl.build(:streak))}.to raise_error(NotImplementedError)
+      expect{FactoryGirl.build(:streak).merge!(FactoryGirl.build(:streak))}
+        .to raise_error(NotImplementedError)
     end
   end
 
   describe '#split!' do
     it 'raises NotImplementedError' do
-      expect{FactoryGirl.build(:streak).split!(Date.today)}.to raise_error(NotImplementedError)
+      expect{FactoryGirl.build(:streak).split!(Time.zone.today)}
+        .to raise_error(NotImplementedError)
     end
   end
 end
 
 RSpec.describe DailyStreak, type: :model do
   it_behaves_like 'a streak', :daily_streak
+  it_behaves_like 'non-abstract streak', :daily_streak
 
   describe '#execute' do
     let!(:streak) { FactoryGirl.create(:daily_streak) }
@@ -271,7 +335,7 @@ RSpec.describe DailyStreak, type: :model do
     let(:end_date) { streak.end_date }
 
     context 'with date within the streak' do
-      let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date..streak.end_date) }
+      let(:date) { seeded_rand(streak.start_date..streak.end_date) }
 
       it 'succeeds without updating the streak' do
         expect(streak.execute(date)).to be_truthy
@@ -316,7 +380,9 @@ RSpec.describe DailyStreak, type: :model do
     let(:end_date) { streak.end_date }
 
     context 'with date inside the streak' do
-      let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date+1.day..streak.end_date-1.day) }
+      let(:date) {
+        seeded_rand((streak.start_date + 1.day)..(streak.end_date - 1.day))
+      }
 
       it 'fails without updating the streak' do
         expect(streak.unexecute(date)).to be_falsey
@@ -355,9 +421,12 @@ RSpec.describe DailyStreak, type: :model do
     end
 
     context 'when unexecuting the only remaining days' do
-      let!(:streak) { FactoryGirl.create(:daily_streak,
-                                         start_date: Date.today,
-                                         end_date: Date.today) }
+      let!(:streak) {
+        FactoryGirl.create(:daily_streak,
+                           start_date: Time.zone.today,
+                           end_date: Time.zone.today)
+      }
+
       it 'succeeds' do
         expect(streak.unexecute(end_date)).to be_truthy
       end
@@ -380,11 +449,11 @@ RSpec.describe DailyStreak, type: :model do
     let(:before_streak) {
       FactoryGirl.create(:daily_streak,
                          start_date: start_date - 5.days,
-                         end_date: start_date - 1.days)
+                         end_date: start_date - 1.day)
     }
     let(:after_streak) {
       FactoryGirl.create(:daily_streak,
-                         start_date: end_date + 1.days,
+                         start_date: end_date + 1.day,
                          end_date: end_date + 5.days)
     }
     let(:disjoint_streak) {
@@ -398,7 +467,9 @@ RSpec.describe DailyStreak, type: :model do
 
   describe '#split!' do
     let!(:streak) { FactoryGirl.create(:daily_streak) }
-    let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date+1.day..streak.end_date-1.day) }
+    let(:date) {
+      seeded_rand((streak.start_date + 1.day)..(streak.end_date - 1.day))
+    }
 
     it_behaves_like 'splitable streak'
   end
@@ -406,6 +477,7 @@ end
 
 RSpec.describe WeeklyStreak, type: :model do
   it_behaves_like 'a streak', :weekly_streak
+  it_behaves_like 'non-abstract streak', :weekly_streak
 
   describe '#execute' do
     let!(:streak) { FactoryGirl.create(:weekly_streak) }
@@ -413,7 +485,7 @@ RSpec.describe WeeklyStreak, type: :model do
     let(:end_date) { streak.end_date }
 
     context 'with date within the streak' do
-      let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date..streak.end_date) }
+      let(:date) { seeded_rand(streak.start_date..streak.end_date) }
 
       it 'succeeds without updating the streak' do
         expect(streak.execute(date)).to be_truthy
@@ -472,7 +544,9 @@ RSpec.describe WeeklyStreak, type: :model do
     let(:end_date) { streak.end_date }
 
     context 'with date inside the streak' do
-      let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date+1.week..streak.end_date-1.week) }
+      let(:date) {
+        seeded_rand((streak.start_date + 1.week)..(streak.end_date - 1.week))
+      }
 
       it 'fails without updating the streak' do
         expect(streak.unexecute(date)).to be_falsey
@@ -511,9 +585,12 @@ RSpec.describe WeeklyStreak, type: :model do
     end
 
     context 'when unexecuting the only remaining days' do
-      let!(:streak) { FactoryGirl.create(:weekly_streak,
-                                         start_date: Date.today - 6.days,
-                                         end_date: Date.today) }
+      let!(:streak) {
+        FactoryGirl.create(:weekly_streak,
+                           start_date: Time.zone.today - 6.days,
+                           end_date: Time.zone.today)
+      }
+
       it 'succeeds' do
         expect(streak.unexecute(end_date)).to be_truthy
       end
@@ -554,7 +631,9 @@ RSpec.describe WeeklyStreak, type: :model do
 
   describe '#split!' do
     let!(:streak) { FactoryGirl.create(:weekly_streak) }
-    let(:date) { Random.new(RSpec.configuration.seed).rand(streak.start_date+1.week..streak.end_date-1.week) }
+    let(:date) {
+      seeded_rand((streak.start_date + 1.week)..(streak.end_date - 1.week))
+    }
 
     it_behaves_like 'splitable streak'
   end
