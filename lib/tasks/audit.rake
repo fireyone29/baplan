@@ -8,7 +8,7 @@ namespace :audit do
       end
     end
   rescue LoadError
-    task :bundle_audit do
+    task :bundle do
       puts 'Could not load bundler audit!'
     end
   end
