@@ -33,7 +33,12 @@ RSpec.describe 'goals/index', type: :view do
 
     it 'lets you know you have no goals yet' do
       render
-      assert_select 'p.empty', text: 'You have no goals. Try adding one.'
+      assert_select 'p.empty', text: /You have no goals. Try adding one/
+    end
+
+    it 'links to the about page' do
+      render
+      assert_select 'a[href=?]', about_path, text: 'learn more'
     end
 
     it_behaves_like 'has basic controls'

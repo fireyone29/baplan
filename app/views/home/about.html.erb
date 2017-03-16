@@ -1,0 +1,82 @@
+<h1>What does <%= Rails.application.class.parent_name.downcase %> do?</h1>
+
+<br />
+
+<p>You start by creating a goal.</p>
+<div class="row">
+  <%= image_tag 'about/goal_create', class: 'col-xs-12 col-md-8' %>
+</div>
+
+<p>
+  Goal descriptions are freeform and allow you to say what you want to
+  achieve. If you have trouble framing your goal, check out the SMART
+  goals paradigm.
+</p>
+
+<p>
+  Goal frequency will determine how often you are expected to
+  accomplish your goal. Not doing your goal in the set frequency will
+  result in resetting any streak you might have.
+</p>
+
+<br />
+
+<p>
+  You can view all your goals on your personalized
+  <% page = 'home page' %>
+  <% if user_signed_in? %>
+    <%= link_to(page, authenticated_root_path) %>.
+  <% else %>
+    <%= page %>.
+  <% end %>
+  You can always get back to your home page by clicking
+  <%= Rails.application.class.parent_name.downcase %> in the top left
+  corner of the page.
+</p>
+<div class="row">
+  <%= image_tag 'about/goals_home', class: 'col-xs-12 col-md-8' %>
+</div>
+
+<p>
+  A goal which you have already satisfied for the day will appear in
+  green. A goal which you need to execute on soon in order to continue
+  your streak will appear in yellow. And a goal with no active streak
+  will appear in red.
+</p>
+
+<br />
+
+<p>
+  Keep track of when you fulfill your goal either using the quick
+  execute button represented by the check mark.  Or you can record an
+  execution on a day other than today using the "Execute" option from
+  the dropdown.
+</p>
+<div class="row">
+  <%= image_tag 'about/goal_dropdown', class: 'col-xs-12 col-md-8' %>
+</div>
+<p>
+  If you accidentally executed a date you did not mean to, you can
+  undo that action using the "Unexecute" option from the same
+  dropdown.
+</p>
+
+<br />
+
+<p>
+  You can view your current and longest execution streaks for each
+  goal by clicking on the goal description to expand it.
+</p>
+<div class="row">
+  <%= image_tag 'about/goal_expanded', class: 'col-xs-12 col-md-8' %>
+</div>
+<p>
+  The same information is available in the details view for each goal.
+</p>
+
+<br />
+
+<p>
+  Didn't find the information you needed here? Check out the
+  <%= link_to('FAQ', faq_path) %>.
+</p>

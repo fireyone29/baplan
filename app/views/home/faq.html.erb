@@ -1,0 +1,74 @@
+<h1>Frequently Asked Questions</h1>
+
+<br />
+
+<ol>
+  <li>
+    <h4>
+      Where can I learn more about using
+      <%= Rails.application.class.parent_name.downcase %>?
+    </h4>
+    <p>Check out the <%= link_to('about page', about_path) %>.</p>
+  </li>
+
+  <li>
+    <h4>Why do I have to sign up?</h4>
+
+    Signing up allows the site to tie your goals to a specific user
+    which in turn allows the site to customize pages just for you and
+    ensure your privacy by preventing unauthorized access.
+  </li>
+
+  <li>
+    <h4>How is my email address used?</h4>
+
+    Your email address is stored for use as your username as well as a
+    way to provide account management functionality such as password
+    resets. Your email is never provided to any other sites or
+    organizations nor made visible to the public.
+    <%= Rails.application.class.parent_name.downcase %> will never
+    send you unsolicited emails.
+  </li>
+
+  <li>
+    <h4>Login Issues</h4>
+    There are links to fix the most common problems on the
+    <% page = 'login page' %>
+    <% if user_signed_in? %>
+      <%= page %>.
+    <% else %>
+      <%= link_to('login page', new_user_session_path) %>.
+    <% end %>
+    If that does not resolve the issue, please report a problem.
+  </li>
+
+  <li>
+    <h4>Timezone Schenanigans</h4>
+
+    All times are currently set on the server side. Personal timezone
+    settings coming soon.
+  </li>
+
+  <li>
+    <h4>What is Javascript used for?</h4>
+
+    Javascript is used to make certain UI elements take actions on
+    click. If javascript is disabled, you may not be able to properly
+    interact with the site.
+  </li>
+
+  <li>
+    <h4>How can I report a problem or make a suggestion?</h4>
+
+    You can open an issue in the
+    <a href="https://github.com/fireyone29/baplan/issues">GitHub
+    project</a> or email baplan@f129.net.
+
+    If you are reporting a problem, please include as much detail as
+    possible about what you were doing when the problem happened or
+    instructions for how to reproduce the problem.
+
+    This site is not professionally managed, so please be paitient
+    while waiting for responses.
+  </li>
+</ol>

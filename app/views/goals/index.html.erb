@@ -2,7 +2,8 @@
   <h1>
     My Goals
 
-    <%= link_to new_goal_path, role: 'button', class: 'btn btn-success btn-lg pull-right' do %>
+    <%= link_to new_goal_path, role: 'button',
+	class: 'btn btn-success btn-lg pull-right' do %>
       Add Goal
     <% end %>
   </h1>
@@ -12,10 +13,14 @@
 
 <div class="row">
   <% if @goals.empty? %>
-    <p class="empty">You have no goals. Try adding one.</p>
+    <p class="empty">
+      You have no goals. Try <%= link_to('adding one', new_goal_path)
+      %> or <%= link_to('learn more', about_path) %>.
+    </p>
   <% end %>
 
-  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel-group" id="accordion" role="tablist"
+       aria-multiselectable="true">
     <% @goals.each do |goal| %>
       <%= render 'panel', goal: goal %>
     <% end %>

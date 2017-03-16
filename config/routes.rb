@@ -19,4 +19,6 @@ Rails.application.routes.draw do
   end
 
   get 'health', to: 'health#show'
+  get 'about', to: 'home#about'
+  get 'faq', to: 'home#faq'
 end

@@ -1,6 +1,12 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<h1>Welcome to <%= Rails.application.class.parent_name.downcase %>!</h1>
 
-<% if user_signed_in? %>
-  <%= link_to 'Goals', goals_path %>
-<% end %>
+<p>
+  <%= Rails.application.class.parent_name.downcase %> is a tool to
+  help you make and track personal goals.
+</p>
+<br />
+<p>
+  Check out the <%= link_to('about page', about_path) %> to learn more
+  or you can <%= link_to('login', new_user_session_path) %> or
+  <%= link_to('signup', new_user_registration_path) %> to get started!
+</p>
