@@ -132,6 +132,24 @@ RSpec.shared_examples 'non-abstract streak' do |factory|
 
       it { is_expected.to be true }
     end
+
+    context 'with start date beyond today' do
+      let(:streak) {
+        FactoryGirl.build(factory,
+                          start_date: Time.zone.today + 1.day)
+      }
+
+      it { is_expected.to be false }
+    end
+
+    context 'with start date of today' do
+      let(:streak) {
+        FactoryGirl.build(factory,
+                          start_date: Time.zone.today)
+      }
+
+      it { is_expected.to be true }
+    end
   end
 
   describe '#current?' do
@@ -145,6 +163,24 @@ RSpec.shared_examples 'non-abstract streak' do |factory|
 
     context 'with a current end_date' do
       let(:end_date) { Time.zone.today + 1.day }
+
+      it { is_expected.to be true }
+    end
+
+    context 'with start date beyond today' do
+      let(:streak) {
+        FactoryGirl.build(factory,
+                          start_date: Time.zone.today + 1.day)
+      }
+
+      it { is_expected.to be false }
+    end
+
+    context 'with start date of today' do
+      let(:streak) {
+        FactoryGirl.build(factory,
+                          start_date: Time.zone.today)
+      }
 
       it { is_expected.to be true }
     end

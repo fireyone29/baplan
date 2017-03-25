@@ -5,15 +5,10 @@
 // today's date on click...
 $(document).on('click', '.quick-submit', function (e) {
   var action = $(this).data('action');
-  var date = new Date();
-  var date_hash = { date: {
-    year: date.getFullYear(),
-    month: date.getMonth() + 1,
-    day: date.getDate()
-  }};
-  $.post(action, date_hash);
+  $.post(action);
 });
 
+// TODO: remove?
 jQuery(function($) {
   $("tr[data-link]").click(function() {
     window.location = $(this).data('link');

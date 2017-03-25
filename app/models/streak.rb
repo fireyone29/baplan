@@ -37,7 +37,8 @@ class Streak < ApplicationRecord
   # @return [Boolean] True if the streak's end date is on or beyond
   #   today.
   def current?
-    end_date >= Time.zone.now.to_date
+    today = Time.zone.now.to_date
+    end_date >= today && start_date <= today
   end
 
   # Check if this streak has been executed recently, i.e. in within
@@ -46,7 +47,8 @@ class Streak < ApplicationRecord
   # @return [Boolean] True if the streak's end date is within on
   #   period of today.
   def recent?
-    end_date >= Time.zone.now.to_date - period
+    today = Time.zone.now.to_date
+    end_date >= today - period && start_date <= today
   end
 
   # Udate this streak with a new execution.

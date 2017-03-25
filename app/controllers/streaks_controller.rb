@@ -51,11 +51,14 @@ class StreaksController < ApplicationController
 
   # Make the relevant date available from parameters.
   def set_date
-    # probably not worth setting date here, browser should have
-    # provided it so there aren't TZ schenanigans.
-    params.require(:date)
     date = params[:date]
-    @date = Date.new(date[:year].to_i, date[:month].to_i, date[:day].to_i)
+    if date.nil?
+      @date = Time.zone.today
+    elsif date.is_a? ActionController::Parameters
+      @date = Date.new(date[:year].to_i, date[:month].to_i, date[:day].to_i)
+    else
+      raise ActionController::BadRequest, 'Invalid date parameter.'
+    end
   rescue ArgumentError => e
     # invalid date, reraise BadRequest
     raise ActionController::BadRequest, e.to_s, e.backtrace

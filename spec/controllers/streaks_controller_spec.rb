@@ -9,25 +9,26 @@ RSpec.shared_examples 'handles invalid streak params' do
     expect(response).to redirect_to(goals_path)
   end
 
-  it 'rejects request without a date' do
-    params.delete(:date)
-    expect{subject}.to raise_error(ActionController::ParameterMissing)
-  end
-
-  it 'rejects request with no date' do
+  it 'rejects request with nil date' do
     params[:date] = nil
-    expect{subject}.to raise_error(ActionController::ParameterMissing)
+    expect{subject}.to raise_error(ActionController::BadRequest)
   end
 
   it 'rejects request with empty date' do
     params[:date] = ''
-    expect{subject}.to raise_error(ActionController::ParameterMissing)
+    expect{subject}.to raise_error(ActionController::BadRequest)
   end
 
   it 'rejects request with invalid date' do
     params[:date] = { year: 2017.to_s,
                       month: 2.to_s,
                       date: 41.to_s } # Feb doesn't have 41 days...
+    expect{subject}.to raise_error(ActionController::BadRequest)
+  end
+
+  it 'rejects request with date missing information' do
+    params[:date] = { year: 2017.to_s,
+                      month: 2.to_s }
     expect{subject}.to raise_error(ActionController::BadRequest)
   end
 end
@@ -52,7 +53,7 @@ RSpec.describe StreaksController, type: :controller do
   end
 
   describe 'POST #execute' do
-    let(:date) { Time.zone.today }
+    let(:date) { Time.zone.today - 2.days }
     subject { post :execute, params: params, session: session }
 
     context 'signed in', :signed_in do
@@ -83,8 +84,17 @@ RSpec.describe StreaksController, type: :controller do
 
       it 'calls update_or_create' do
         expect(Goal).to receive(:find).with(goal.to_param).and_return(goal)
-        expect(goal).to receive(:update_or_create!)
+        expect(goal).to receive(:update_or_create!).with(date)
         subject
+      end
+
+      context 'with no date provided' do
+        it 'calls update_or_create with today' do
+          params.delete(:date)
+          expect(Goal).to receive(:find).with(goal.to_param).and_return(goal)
+          expect(goal).to receive(:update_or_create!).with(Time.zone.today)
+          subject
+        end
       end
 
       it_behaves_like 'handles invalid streak params'
@@ -127,6 +137,19 @@ RSpec.describe StreaksController, type: :controller do
       it 'unexecutes the correct date' do
         subject
         expect(streak.reload.start_date.to_s).not_to eql date
+      end
+
+      context 'with no date provided' do
+        let!(:streak) {
+          FactoryGirl.create(:weekly_streak,
+                             start_date: Time.zone.today)
+        }
+
+        it 'unexecutes today' do
+          params.delete(:date)
+          subject
+          expect(streak.reload.start_date.to_s).not_to eql Time.zone.today
+        end
       end
 
       it_behaves_like 'handles invalid streak params'

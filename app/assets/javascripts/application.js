@@ -14,5 +14,6 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require jquery.turbolinks
-//= require vendor/bootstrap
+//= require bootstrap
+//= require jstzdetect
 //= require_tree .

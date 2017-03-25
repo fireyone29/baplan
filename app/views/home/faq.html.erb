@@ -37,23 +37,34 @@
     <% if user_signed_in? %>
       <%= page %>.
     <% else %>
-      <%= link_to('login page', new_user_session_path) %>.
+      <%= link_to(page, new_user_session_path) %>.
     <% end %>
     If that does not resolve the issue, please report a problem.
   </li>
 
   <li>
-    <h4>Timezone Schenanigans</h4>
+    <h4>Time zones</h4>
 
-    All times are currently set on the server side. Personal timezone
-    settings coming soon.
+    In order to accurately determine how recently you have executed on
+    your goals, <%= Rails.application.class.parent_name.downcase %>
+    needs to know what time zone you are in. There are two ways this
+    can be determined. By default, javascript is used to query your
+    browser for the information. You can also configure a static time
+    zone in your
+    <% page = 'account settings' %>
+    <% if user_signed_in? %>
+      <%= link_to(page, edit_user_registration_path) %>.
+    <% else %>
+      <%= page %>.
+    <% end %>
   </li>
 
   <li>
     <h4>What is Javascript used for?</h4>
 
     Javascript is used to make certain UI elements take actions on
-    click. If javascript is disabled, you may not be able to properly
+    click. It may also be used as described in the time zones section,
+    above. If javascript is disabled, you may not be able to properly
     interact with the site.
   </li>
 
