@@ -131,7 +131,7 @@ Devise.setup do |config|
   # confirming their account, access will be blocked just in the third
   # day. Default is 0.days, meaning the user cannot access the website
   # without confirming their account.
-  config.allow_unconfirmed_access_for = 1.day
+  config.allow_unconfirmed_access_for = 3.days
 
   # A period that the user is allowed to confirm their account before
   # their token becomes invalid. For example, if set to 3.days, the
@@ -148,6 +148,9 @@ Devise.setup do |config|
   # confirmed, new email is stored in unconfirmed_email column, and
   # copied to email column on successful confirmation.
   config.reconfirmable = true
+  # Send a notification to the original email when the user's email is
+  # changed.
+  config.send_email_changed_notification = true
 
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [:email]

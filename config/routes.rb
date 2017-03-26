@@ -6,9 +6,11 @@ Rails.application.routes.draw do
   end
   root 'home#index'
 
-  devise_for :users, path_names: { sign_in: 'login',
-                                   sign_out: 'logout',
-                                   edit: 'settings' }
+  devise_for :users,
+             path_names: { sign_in: 'login',
+                           sign_out: 'logout',
+                           edit: 'settings' },
+             controllers: { registrations: 'registrations' }
 
   resources :goals do
     get 'streaks/execute', to: 'streaks#execute_form'
