@@ -28,4 +28,23 @@ module GoalsHelper
       0
     end
   end
+
+  # Return the appropriate bootstrap class modifier based on how
+  # recent the latest streak is
+  #
+  # @param goal [Goal] The goal to work with.
+  # @return [String] The appropriate color values.
+  def colors(goal)
+    if goal.latest_streak
+      if goal.latest_streak.current?
+        { class: 'success', hex: '#dff0d8' }
+      elsif goal.latest_streak.recent?
+        { class: 'warning', hex: '#fcf8e3' }
+      else
+        { class: 'danger', hex: '#ebcccc' }
+      end
+    else
+      { class: 'default', hex: nil }
+    end
+  end
 end

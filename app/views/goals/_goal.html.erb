@@ -2,20 +2,7 @@
 <% collapse_id = "collapse_#{goal.id}" %>
 <% collapse_link = "##{collapse_id}" %>
 
-<% panel_klass = "panel-" %>
-<% if goal.latest_streak %>
-  <% if goal.latest_streak.current? %>
-    <% panel_klass += "success" %>
-  <% elsif goal.latest_streak.recent? %>
-    <% panel_klass += "warning" %>
-  <% else %>
-    <% panel_klass += "danger" %>
-  <% end %>
-<% else %>
-  <% panel_klass += "default" %>
-<% end %>
-
-<div class="panel <%= panel_klass %>">
+<div class="panel panel-<%= colors(goal)[:class] %>">
   <div class="panel-heading clearfix" role="tab" id="<%=header_id%>">
     <div class="dropdown pull-right">
       <button type="button" class="dropdown-toggle" data-toggle="dropdown">

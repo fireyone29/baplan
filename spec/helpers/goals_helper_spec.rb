@@ -82,4 +82,46 @@ RSpec.describe GoalsHelper, type: :helper do
       end
     end
   end
+
+  describe '#colors' do
+    subject { helper.colors(goal) }
+
+    context 'with streak' do
+      let(:streak) { double('Streak') }
+      let(:current) { false }
+      let(:recent) { false }
+
+      before do
+        expect(goal).to receive(:latest_streak)
+                         .and_return(streak)
+                         .at_most(3).times
+        expect(streak).to receive(:current?).and_return(current)
+        expect(streak).to receive(:recent?).and_return(recent).at_most(:once)
+      end
+
+      context 'with current streak' do
+        let(:current) { true }
+
+        it { is_expected.to eql(class: 'success', hex: '#dff0d8') }
+      end
+
+      context 'with recent streak' do
+        let(:current) { false }
+        let(:recent) { true }
+
+        it { is_expected.to eql(class: 'warning', hex: '#fcf8e3') }
+      end
+
+      context 'with no recent streak' do
+        let(:current) { false }
+        let(:recent) { false }
+
+        it { is_expected.to eql(class: 'danger', hex: '#ebcccc') }
+      end
+    end
+
+    context 'with no streaks' do
+      it { is_expected.to eql(class: 'default', hex: nil) }
+    end
+  end
 end

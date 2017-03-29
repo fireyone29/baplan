@@ -1,15 +1,5 @@
 <div class="row">
-  <% color = nil %>
-  <% if @goal.latest_streak %>
-    <% if @goal.latest_streak.current? %>
-      <% color = "#dff0d8" %>
-    <% elsif @goal.latest_streak.recent? %>
-      <% color = "#fcf8e3" %>
-    <% else %>
-      <% color = "#ebcccc" %>
-    <% end %>
-  <% end %>
-
+  <% color = colors(@goal)[:hex] %>
   <div class="jumbotron", style="background-color:<%= color if color %>">
     <h1>
       <small>I will</small>

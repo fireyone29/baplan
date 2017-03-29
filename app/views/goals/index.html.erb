@@ -17,12 +17,10 @@
       You have no goals. Try <%= link_to('adding one', new_goal_path)
       %> or <%= link_to('learn more', about_path) %>.
     </p>
+  <% else %>
+    <div class="panel-group" id="accordion" role="tablist"
+	 aria-multiselectable="true">
+      <%= render @goals %>
+    </div>
   <% end %>
-
-  <div class="panel-group" id="accordion" role="tablist"
-       aria-multiselectable="true">
-    <% @goals.each do |goal| %>
-      <%= render 'panel', goal: goal %>
-    <% end %>
-  </div>
 </div>
