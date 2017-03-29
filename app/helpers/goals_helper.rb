@@ -29,11 +29,11 @@ module GoalsHelper
     end
   end
 
-  # Return the appropriate bootstrap class modifier based on how
-  # recent the latest streak is
+  # Return the appropriate bootstrap class modifier and hex color
+  # based on how recent the latest streak is
   #
   # @param goal [Goal] The goal to work with.
-  # @return [String] The appropriate color values.
+  # @return [Hash] The appropriate color values.
   def colors(goal)
     if goal.latest_streak
       if goal.latest_streak.current?
