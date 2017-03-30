@@ -19,8 +19,8 @@ class StreaksController < ApplicationController
   # Update the goal with an unexecution on the provided date.
   def unexecute
     Streak.where(goal_id: @goal.id)
-      .where('start_date <= ? AND end_date >= ?', @date, @date)
-      .each { |s| s.split!(@date) }
+          .where('start_date <= ? AND end_date >= ?', @date, @date)
+          .each { |s| s.split!(@date) }
     if @referer_path == goal_streaks_unexecute_path(@goal)
       redirect_to session[:streaks_previous_url]
     else

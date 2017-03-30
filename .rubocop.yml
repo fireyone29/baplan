@@ -10,7 +10,7 @@ Rails:
 Style/FrozenStringLiteralComment:
   Enabled: false
 Style/MultilineMethodCallIndentation:
-  EnforcedStyle: indented
+  EnforcedStyle: aligned
 
 Metrics/MethodLength:
   Max: 35
