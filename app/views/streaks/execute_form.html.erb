@@ -3,6 +3,6 @@
     <div class="panel-heading">
       <h4><%= t('.execute_streak', default: 'Execute') %></h4>
     </div>
-    <%= render 'form', goal: @goal, path: goal_streaks_execute_path(@goal) %>
+    <%= render 'form', goal: @goal, path: goal_execute_path(@goal) %>
   </div>
 </div>

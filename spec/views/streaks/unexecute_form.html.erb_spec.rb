@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'streaks/unexecute_form', type: :view do
-  let(:action) { goal_streaks_unexecute_path(@goal) }
+  let(:action) { goal_unexecute_path(@goal) }
   before(:each) do
     @goal = assign(:goal, FactoryGirl.create(:goal))
   end

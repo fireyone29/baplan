@@ -14,3 +14,10 @@ RSpec.shared_examples 'rejects unauthorized access' do
     expect(response).to redirect_to(new_user_session_path)
   end
 end
+
+RSpec.shared_examples 'rejects unauthorized json access' do
+  it 'is unauthorized' do
+    subject
+    expect(response).to be_unauthorized
+  end
+end

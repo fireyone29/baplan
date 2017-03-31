@@ -13,11 +13,13 @@ Rails.application.routes.draw do
              controllers: { registrations: 'registrations' }
 
   resources :goals do
-    get 'streaks/execute', to: 'streaks#execute_form'
-    post 'streaks/execute', to: 'streaks#execute'
+    get 'streaks', to: 'streaks#find'
 
-    get 'streaks/unexecute', to: 'streaks#unexecute_form'
-    post 'streaks/unexecute', to: 'streaks#unexecute'
+    get 'execute', to: 'streaks#execute_form'
+    post 'execute', to: 'streaks#execute'
+
+    get 'unexecute', to: 'streaks#unexecute_form'
+    post 'unexecute', to: 'streaks#unexecute'
   end
 
   get 'health', to: 'health#show'

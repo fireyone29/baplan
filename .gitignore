@@ -7,6 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore rvm config
+.ruby-gemset
+.ruby-version
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*

@@ -45,7 +45,6 @@ RSpec.describe StreaksController, type: :controller do
   }
   let(:additional_params) { {} }
   let(:previous_url) { '/abc123' }
-  let(:session) { { streaks_previous_url: previous_url } }
   let(:referer) { nil }
 
   before do
@@ -53,12 +52,13 @@ RSpec.describe StreaksController, type: :controller do
   end
 
   describe 'POST #execute' do
+    let(:session) { { streaks_previous_url: previous_url } }
     let(:date) { Time.zone.today - 2.days }
     subject { post :execute, params: params, session: session }
 
     context 'signed in', :signed_in do
       context 'when referer is execute form' do
-        let(:referer) { goal_streaks_execute_path(goal) }
+        let(:referer) { goal_execute_path(goal) }
 
         it 'redirects to the url from session' do
           subject
@@ -103,14 +103,30 @@ RSpec.describe StreaksController, type: :controller do
     it_behaves_like 'rejects unauthorized access'
   end
 
+  describe 'GET #execute_form' do
+    let(:date) { Time.zone.today - 2.days }
+    let(:referer) { '/abc' }
+    subject { get :execute_form, params: params }
+
+    context 'signed in', :signed_in do
+      it 'saves the referer to the session' do
+        subject
+        expect(session[:streaks_previous_url]).to eql referer
+      end
+    end
+
+    it_behaves_like 'rejects unauthorized access'
+  end
+
   describe 'POST #unexecute' do
+    let(:session) { { streaks_previous_url: previous_url } }
     let(:date) { streak.end_date }
     let(:additional_params) { { id: streak.to_param } }
     subject { post :unexecute, params: params, session: session }
 
     context 'signed in', :signed_in do
       context 'when referer is execute form' do
-        let(:referer) { goal_streaks_unexecute_path(goal) }
+        let(:referer) { goal_unexecute_path(goal) }
 
         it 'redirects to the url from session' do
           subject
@@ -156,5 +172,124 @@ RSpec.describe StreaksController, type: :controller do
     end
 
     it_behaves_like 'rejects unauthorized access'
+  end
+
+  describe 'GET #unexecute_form' do
+    let(:date) { Time.zone.today - 2.days }
+    let(:referer) { '/abc' }
+    subject { get :unexecute_form, params: params }
+
+    context 'signed in', :signed_in do
+      it 'saves the referer to the session' do
+        subject
+        expect(session[:streaks_previous_url]).to eql referer
+      end
+    end
+
+    it_behaves_like 'rejects unauthorized access'
+  end
+
+  describe 'GET #find' do
+    let(:params) {
+      {
+        goal_id: goal.to_param
+      }.merge(additional_params)
+    }
+    let(:json_body) { JSON.parse(response.body) }
+    subject { get :find, format: :json, params: params, session: session }
+
+    context 'signed in', :signed_in do
+      context 'with no params' do
+        it 'returns all streaks' do
+          subject
+          expect(response).to be_successful
+          expect(assigns(:streaks)).to match_array [streak]
+        end
+      end
+
+      context 'with no streaks' do
+        let!(:goal) { FactoryGirl.create(:goal) }
+
+        it 'is empty' do
+          subject
+          expect(response).to be_successful
+          expect(assigns(:streaks)).to be_empty
+        end
+
+        context 'with streaks on other goals' do
+          before do
+            FactoryGirl.create(:daily_streak)
+          end
+
+          it 'is empty' do
+            subject
+            expect(response).to be_successful
+            expect(assigns(:streaks)).to be_empty
+          end
+        end
+      end
+
+      context 'with a variety of streaks' do
+        let(:goal) { FactoryGirl.create(:goal) }
+        let!(:streak1) {
+          FactoryGirl.create(:streak,
+                             goal_id: goal.id,
+                             start_date: '2017-03-04',
+                             end_date: '2017-04-04')
+        }
+        let!(:streak2) {
+          FactoryGirl.create(:streak,
+                             goal_id: goal.id,
+                             start_date: '2016-08-15',
+                             end_date: '2017-01-01')
+        }
+        let!(:streak3) {
+          FactoryGirl.create(:streak,
+                             goal_id: goal.id,
+                             start_date: '2017-03-01',
+                             end_date: '2017-03-02')
+        }
+
+        context 'with a year filter on start date' do
+          let(:additional_params) { { start_date: '2017' } }
+
+          it 'returns matching streaks' do
+            subject
+            expect(response).to be_successful
+            expect(assigns(:streaks)).to match_array [streak1, streak3]
+          end
+        end
+
+        context 'with a month filter on end date' do
+          let(:additional_params) { { end_date: '2017-03' } }
+
+          it 'returns matching streaks' do
+            subject
+            expect(response).to be_successful
+            expect(assigns(:streaks)).to match_array [streak3]
+          end
+        end
+
+        context 'with a day filter' do
+          let(:additional_params) { { start_date: '2017-03-04' } }
+
+          it 'returns matching streaks' do
+            subject
+            expect(response).to be_successful
+            expect(assigns(:streaks)).to match_array [streak1]
+          end
+        end
+
+        context 'with no filter' do
+          it 'returns all streaks' do
+            subject
+            expect(response).to be_successful
+            expect(assigns(:streaks)).to match_array [streak1, streak2, streak3]
+          end
+        end
+      end
+    end
+
+    it_behaves_like 'rejects unauthorized json access'
   end
 end

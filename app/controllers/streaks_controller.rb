@@ -6,10 +6,18 @@ class StreaksController < ApplicationController
   before_action :set_referer_path, only: [:execute, :unexecute]
   after_action :save_previous_url, only: [:execute_form, :unexecute_form]
 
+  # Find and return any streaks for the specified goal that match the
+  # provided parameters.
+  def find
+    find_params = params.slice(:end_date, :start_date).permit!
+    find_params.transform_values! { |v| helpers.date_param_to_range(v) }
+    @streaks = Streak.where(goal_id: @goal.id).where(find_params)
+  end
+
   # Update the goal with an execution on the provided date.
   def execute
     @goal.update_or_create!(@date)
-    if @referer_path == goal_streaks_execute_path(@goal)
+    if @referer_path == goal_execute_path(@goal)
       redirect_to session[:streaks_previous_url]
     else
       redirect_to @referer_path
@@ -21,7 +29,7 @@ class StreaksController < ApplicationController
     Streak.where(goal_id: @goal.id)
           .where('start_date <= ? AND end_date >= ?', @date, @date)
           .each { |s| s.split!(@date) }
-    if @referer_path == goal_streaks_unexecute_path(@goal)
+    if @referer_path == goal_unexecute_path(@goal)
       redirect_to session[:streaks_previous_url]
     else
       redirect_to @referer_path

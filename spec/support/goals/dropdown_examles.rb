@@ -3,7 +3,7 @@ RSpec.shared_examples 'has dropdown with many goal actions' do
     render
     assert_select 'ul' do
       assert_select ":match('class', ?)", /dropdown-menu/
-      assert_select 'li>a[href=?]', goal_streaks_execute_path(goal),
+      assert_select 'li>a[href=?]', goal_execute_path(goal),
                     text: 'Execute'
     end
   end
@@ -12,7 +12,7 @@ RSpec.shared_examples 'has dropdown with many goal actions' do
     render
     assert_select 'ul' do
       assert_select ":match('class', ?)", /dropdown-menu/
-      assert_select 'li>a[href=?]', goal_streaks_unexecute_path(goal),
+      assert_select 'li>a[href=?]', goal_unexecute_path(goal),
                     text: 'Unexecute'
     end
   end
