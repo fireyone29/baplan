@@ -14,5 +14,5 @@ RSpec.describe 'devise/passwords/edit', type: :view do
   end
 
   it_behaves_like 'displays devise form errors',
-                  [:password, :password_confirmation]
+                  %i[password password_confirmation]
 end

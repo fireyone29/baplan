@@ -12,7 +12,7 @@ module DeviseHelper
   #
   # @return [String] HTML for displaying an error on a field.
   def devise_errors_for(field_name)
-    return '' if resource.errors[field_name].empty?
+    return '' if resource.errors[field_name].blank?
     render 'shared/form_field_error', messages: resource.errors[field_name]
   end
 end

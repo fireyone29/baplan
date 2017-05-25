@@ -2,12 +2,16 @@ inherit_from: ../.rubocop.yml
 
 Style/BlockDelimiters:
   EnforcedStyle: semantic
-Style/SpaceInsideBlockBraces:
+
+Layout/SpaceInsideBlockBraces:
   Enabled: false
-Style/SpaceBeforeBlockBraces:
+Layout/SpaceBeforeBlockBraces:
   Enabled: false
-Style/MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   Enabled: false
 
 Metrics/BlockLength:
+  Enabled: false
+
+Lint/AmbiguousBlockAssociation:
   Enabled: false

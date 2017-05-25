@@ -12,7 +12,7 @@ module GoalsHelper
   #
   # @return [String] HTML for displaying an error on a field.
   def goals_errors_for(field_name)
-    return '' if !@goal.errors[field_name] || @goal.errors[field_name].empty?
+    return '' if @goal.errors[field_name].blank?
     render 'shared/form_field_error', messages: @goal.errors[field_name]
   end
 
@@ -20,7 +20,7 @@ module GoalsHelper
   # goal.
   #
   # @param goal [Goal] The goal to read from.
-  # @return [FixNum] Length in days of the current streak.
+  # @return [Integer] Length in days of the current streak.
   def current_length(goal)
     if goal.latest_streak && goal.latest_streak.recent?
       goal.latest_streak.length / 1.day.seconds

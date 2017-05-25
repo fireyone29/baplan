@@ -1,10 +1,10 @@
 FactoryGirl.define do
   factory :user do
     transient do
-      my_password { Forgery(:basic).password }
+      my_password { Faker::Internet.password }
     end
 
-    email { Forgery(:internet).email_address }
+    email { Faker::Internet.safe_email }
     password { my_password }
     password_confirmation { my_password }
     confirmed_at { Time.zone.today }

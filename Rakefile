@@ -7,4 +7,4 @@ require_relative 'config/application'
 Rails.application.load_tasks
 
 desc 'Fully verify the app'
-task verify: %w(spec:coverage lint audit docs)
+task verify: %w[spec:coverage lint audit docs]

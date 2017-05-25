@@ -10,4 +10,4 @@ namespace :lint do
 end
 
 desc 'Run All Linting'
-task lint: %w(lint:rubocop)
+task lint: %w[lint:rubocop]

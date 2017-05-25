@@ -2,9 +2,9 @@
 class StreaksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_goal
-  before_action :set_date, only: [:execute, :unexecute]
-  before_action :set_referer_path, only: [:execute, :unexecute]
-  after_action :save_previous_url, only: [:execute_form, :unexecute_form]
+  before_action :set_date, only: %i[execute unexecute]
+  before_action :set_referer_path, only: %i[execute unexecute]
+  after_action :save_previous_url, only: %i[execute_form unexecute_form]
 
   # Find and return any streaks for the specified goal that match the
   # provided parameters.

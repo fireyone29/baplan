@@ -1,8 +1,8 @@
 # Controller for manipulating goals.
 class GoalsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_authorized_goal, only: [:show, :edit, :update, :destroy]
-  after_action :save_previous_url, only: [:edit]
+  before_action :set_authorized_goal, only: %i[show edit update destroy]
+  after_action :save_previous_url, only: %i[edit]
 
   # GET /goals
   # GET /goals.json

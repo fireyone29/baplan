@@ -13,5 +13,5 @@ RSpec.describe 'devise/sessions/new', type: :view do
     end
   end
 
-  it_behaves_like 'displays devise form errors', [:email, :password]
+  it_behaves_like 'displays devise form errors', %i[email password]
 end

@@ -11,7 +11,7 @@ class Goal < ApplicationRecord
             allow_blank: false,
             uniqueness: { scope: :user_id }
 
-  enum frequency: [:daily, :weekly]
+  enum frequency: %i[daily weekly]
 
   # Record a execution of this goal on the given date.
   #

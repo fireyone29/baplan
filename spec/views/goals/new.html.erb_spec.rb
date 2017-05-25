@@ -23,5 +23,5 @@ RSpec.describe 'goals/new', type: :view do
     end
   end
 
-  it_behaves_like 'displays goal form errors', [:description, :frequency]
+  it_behaves_like 'displays goal form errors', %i[description frequency]
 end

@@ -19,8 +19,7 @@ RSpec.describe 'devise/registrations/edit', type: :view do
   end
 
   it_behaves_like 'displays devise form errors',
-                  [:email, :password, :password_confirmation,
-                   :current_password]
+                  %i[email password password_confirmation current_password]
 
   it 'renders the delete account form' do
     render

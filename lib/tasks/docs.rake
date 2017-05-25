@@ -2,7 +2,7 @@ namespace :docs do
   begin
     require 'yard'
     YARD::Rake::YardocTask.new(:yard) do |t|
-      t.files = %w(app/**/*.rb lib/**/*.rb - LICENSE.md)
+      t.files = %w[app/**/*.rb lib/**/*.rb - LICENSE.md]
       t.stats_options = ['--list-undoc']
     end
   rescue LoadError
@@ -13,4 +13,4 @@ namespace :docs do
 end
 
 desc 'Generate All Documentation'
-task docs: %w(docs:yard)
+task docs: %w[docs:yard]

@@ -15,5 +15,5 @@ RSpec.describe 'devise/registrations/new', type: :view do
   end
 
   it_behaves_like 'displays devise form errors',
-                  [:email, :password, :password_confirmation]
+                  %i[email password password_confirmation]
 end

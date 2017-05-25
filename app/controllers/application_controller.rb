@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
 
   # Add allowed parameters beyond what devise uses by default.
   def configure_devise_parameters
-    custom_keys = %w(time_zone)
+    custom_keys = %w[time_zone]
     devise_parameter_sanitizer.permit(:account_update, keys: custom_keys)
   end
 

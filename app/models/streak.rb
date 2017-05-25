@@ -10,7 +10,7 @@ class Streak < ApplicationRecord
   validate :positive_streak
 
   after_save :update_longest_streak
-  after_destroy :check_longest_streak
+  after_destroy :destroy_longest_streak
 
   # Error raised when updating a streak fails.
   class UpdateError < StandardError; end
@@ -29,7 +29,7 @@ class Streak < ApplicationRecord
   #
   # @return [Integer] length of the streak.
   def length
-    date_difference(start_date, end_date) + 1.day
+    duration(start_date, end_date) + 1.day
   end
 
   # Check if this streak has been executed for today.
@@ -152,7 +152,7 @@ class Streak < ApplicationRecord
     raise UpdateError, 'Invalid split' unless inside_streak?(date)
 
     # Needs to find where to start the split (e.g. for weekly streaks)
-    periods = date_difference(start_date, date) / period
+    periods = duration(start_date, date) / period
     new_end = add_multiple_of_time(start_date, period, periods)
 
     new_streak = nil
@@ -193,17 +193,29 @@ class Streak < ApplicationRecord
       return goal.save
     end
 
-    check_longest_streak
+    return unless start_date_before_last_save && end_date_before_last_save
+
+    check_longest_streak(
+      duration(start_date_before_last_save, end_date_before_last_save) + 1.day
+    )
+  end
+
+  # On destroy, set the goal's longest streak length if necessary.
+  def destroy_longest_streak
+    return unless start_date_was && end_date_was
+
+    check_longest_streak(
+      duration(start_date_was, end_date_was) + 1.day
+    )
   end
 
   # Handle updating the goal's longest streak when streak length has
   # been reduced (e.g. by destroying this streak).
-  def check_longest_streak
-    old_length = 0
-    if start_date_was && end_date_was
-      old_length = date_difference(start_date_was, end_date_was) + 1.day
-    end
-
+  #
+  # @param old_length [ActiveSupport::Duration] The length before
+  #   whatever updates were made. How you determine this will depend
+  #   on how the model was updated.
+  def check_longest_streak(old_length)
     if old_length.positive? && length < goal.longest_streak_length &&
        old_length == goal.longest_streak_length
       # this streak might have been the longest streak, which would
@@ -243,8 +255,8 @@ class Streak < ApplicationRecord
   #
   # @param sdate [Date] The start of the range.
   # @param edate [Date] The end of the range.
-  # @return [FixNum] Number of seconds between the dates.
-  def date_difference(sdate, edate)
+  # @return [Integer] Number of seconds between the dates.
+  def duration(sdate, edate)
     (edate - sdate).to_i.days
   end
 

@@ -1,6 +1,7 @@
 AllCops:
   Exclude:
     - 'db/schema.rb'
+    - 'db/migrate/*'
     - 'vendor/**/*'
     - 'bin/**/*'
 
@@ -9,7 +10,8 @@ Rails:
 
 Style/FrozenStringLiteralComment:
   Enabled: false
-Style/MultilineMethodCallIndentation:
+
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: aligned
 
 Metrics/MethodLength:

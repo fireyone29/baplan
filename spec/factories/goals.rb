@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :goal do
-    description { Forgery(:lorem_ipsum).words(4) }
+    description { Faker::Lorem.sentence(3) }
     frequency { Goal.frequencies.keys.sample }
 
     user
