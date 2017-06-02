@@ -5,11 +5,16 @@ RSpec.describe 'streaks/execute_form', type: :view do
 
   before(:each) do
     @goal = assign(:goal, FactoryGirl.create(:goal))
+    render
+  end
+
+  it 'renders the goal description' do
+    assert_select '.panel-heading' do
+      assert_select 'h4', text: "Execute #{@goal.description}"
+    end
   end
 
   it 'renders the execute form' do
-    render
-
     assert_select 'form[action=?][method=?]', action, 'post' do
       assert_select 'label[for=?]', 'streak_date', text: 'Date'
       assert_select 'select[name=?]', 'date[year]'
@@ -20,7 +25,6 @@ RSpec.describe 'streaks/execute_form', type: :view do
   end
 
   it 'renders a cancel button' do
-    render
     assert_select 'form[action=?][method=?]', action, 'post' do
       assert_select 'a[role=?][href=?]', 'button', 'javascript:history.back()',
                     text: 'Cancel'

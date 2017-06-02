@@ -1,7 +1,7 @@
 <div class="basic_form">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h4><%= t('.execute_streak', default: 'Execute') %></h4>
+      <h4><%= t('.execute_streak', default: 'Execute') %> <%= @goal.description %></h4>
     </div>
     <%= render 'form', goal: @goal, path: goal_execute_path(@goal) %>
   </div>
