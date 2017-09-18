@@ -22,7 +22,7 @@ module GoalsHelper
   # @param goal [Goal] The goal to read from.
   # @return [Integer] Length in days of the current streak.
   def current_length(goal)
-    if goal.latest_streak && goal.latest_streak.recent?
+    if goal.latest_streak&.recent?
       goal.latest_streak.length / 1.day.seconds
     else
       0
