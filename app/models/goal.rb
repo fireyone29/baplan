@@ -4,7 +4,9 @@
 class Goal < ApplicationRecord
   belongs_to :user
   has_many :streaks, dependent: :destroy
-  has_one :latest_streak, -> { order 'end_date desc' }, class_name: 'Streak'
+  has_one :latest_streak, -> { order 'end_date desc' },
+          inverse_of: :goal,
+          class_name: 'Streak'
 
   validates :description,
             presence: true,

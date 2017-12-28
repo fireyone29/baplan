@@ -8,3 +8,6 @@ Rails.application.load_tasks
 
 desc 'Fully verify the app'
 task verify: %w[spec:coverage lint audit docs]
+task v: :verify
+
+task default: :verify

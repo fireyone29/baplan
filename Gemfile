@@ -54,7 +54,7 @@ group :development, :test do
   # Use rspec for unit tests
   gem 'rspec-rails'
   # Yard to make sure things get documented nicely
-  gem 'yard'
+  gem 'yard', '>= 0.9.11'
   # Rubocop to keep things pretty
   gem 'rubocop'
   # For test coverage stats
