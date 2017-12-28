@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.shared_examples 'handles invalid streak params' do
   it 'rejects goals not owned by current user' do
-    new_streak = FactoryGirl.create(:streak)
+    new_streak = FactoryBot.create(:streak)
     params[:goal_id] = new_streak.goal.to_param
     params[:id] = new_streak.to_param
     subject
@@ -34,7 +34,7 @@ RSpec.shared_examples 'handles invalid streak params' do
 end
 
 RSpec.describe StreaksController, type: :controller do
-  let!(:streak) { FactoryGirl.create(:weekly_streak) }
+  let!(:streak) { FactoryBot.create(:weekly_streak) }
   let(:goal) { streak.goal }
   let(:user) { goal.user }
   let(:params) {
@@ -157,8 +157,8 @@ RSpec.describe StreaksController, type: :controller do
 
       context 'with no date provided' do
         let!(:streak) {
-          FactoryGirl.create(:weekly_streak,
-                             start_date: Time.zone.today)
+          FactoryBot.create(:weekly_streak,
+                            start_date: Time.zone.today)
         }
 
         it 'unexecutes today' do
@@ -208,7 +208,7 @@ RSpec.describe StreaksController, type: :controller do
       end
 
       context 'with no streaks' do
-        let!(:goal) { FactoryGirl.create(:goal) }
+        let!(:goal) { FactoryBot.create(:goal) }
 
         it 'is empty' do
           subject
@@ -218,7 +218,7 @@ RSpec.describe StreaksController, type: :controller do
 
         context 'with streaks on other goals' do
           before do
-            FactoryGirl.create(:daily_streak)
+            FactoryBot.create(:daily_streak)
           end
 
           it 'is empty' do
@@ -230,24 +230,24 @@ RSpec.describe StreaksController, type: :controller do
       end
 
       context 'with a variety of streaks' do
-        let(:goal) { FactoryGirl.create(:goal) }
+        let(:goal) { FactoryBot.create(:goal) }
         let!(:streak1) {
-          FactoryGirl.create(:streak,
-                             goal_id: goal.id,
-                             start_date: '2017-03-04',
-                             end_date: '2017-04-04')
+          FactoryBot.create(:streak,
+                            goal_id: goal.id,
+                            start_date: '2017-03-04',
+                            end_date: '2017-04-04')
         }
         let!(:streak2) {
-          FactoryGirl.create(:streak,
-                             goal_id: goal.id,
-                             start_date: '2016-08-15',
-                             end_date: '2017-01-01')
+          FactoryBot.create(:streak,
+                            goal_id: goal.id,
+                            start_date: '2016-08-15',
+                            end_date: '2017-01-01')
         }
         let!(:streak3) {
-          FactoryGirl.create(:streak,
-                             goal_id: goal.id,
-                             start_date: '2017-03-01',
-                             end_date: '2017-03-02')
+          FactoryBot.create(:streak,
+                            goal_id: goal.id,
+                            start_date: '2017-03-01',
+                            end_date: '2017-03-02')
         }
 
         context 'with a year filter on start date' do

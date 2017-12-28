@@ -33,7 +33,7 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     context 'with signed in user', :signed_in do
-      let(:user) { FactoryGirl.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
 
       context 'with no time zone information' do
         it 'warns the user with a flash message' do
@@ -44,7 +44,7 @@ RSpec.describe ApplicationController, type: :controller do
 
       context 'with time zone configured on the user' do
         let(:time_zone) { 'Eastern Time (US & Canada)' }
-        let(:user) { FactoryGirl.create(:user, time_zone: time_zone) }
+        let(:user) { FactoryBot.create(:user, time_zone: time_zone) }
 
         it 'sets the configured time zone' do
           expect(Time.zone.name).not_to eql time_zone

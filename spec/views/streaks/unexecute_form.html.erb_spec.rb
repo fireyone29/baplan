@@ -4,7 +4,7 @@ RSpec.describe 'streaks/unexecute_form', type: :view do
   let(:action) { goal_unexecute_path(@goal) }
 
   before(:each) do
-    @goal = assign(:goal, FactoryGirl.create(:goal))
+    @goal = assign(:goal, FactoryBot.create(:goal))
     render
   end
 

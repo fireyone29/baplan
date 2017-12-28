@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'goals/new', type: :view do
   before(:each) do
-    assign(:goal, FactoryGirl.build(:goal))
+    assign(:goal, FactoryBot.build(:goal))
   end
 
   it 'renders new goal form' do

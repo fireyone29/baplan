@@ -23,17 +23,17 @@ require 'rails_helper'
 # receiving a specific message.
 
 RSpec.describe GoalsController, type: :controller do
-  let!(:user) { FactoryGirl.create(:user) }
+  let!(:user) { FactoryBot.create(:user) }
 
   # This should return the minimal set of attributes required to create a valid
   # Goal. As you add validations to Goal, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    FactoryGirl.attributes_for(:goal, user_id: user.id)
+    FactoryBot.attributes_for(:goal, user_id: user.id)
   }
 
   let(:invalid_attributes) {
-    FactoryGirl.attributes_for(:goal, user_id: user.id, description: '')
+    FactoryBot.attributes_for(:goal, user_id: user.id, description: '')
   }
 
   # This should return the minimal set of values that should be in the session
@@ -52,7 +52,7 @@ RSpec.describe GoalsController, type: :controller do
       end
 
       context 'with goals from multiple users' do
-        let!(:goal2) { FactoryGirl.create(:goal) }
+        let!(:goal2) { FactoryBot.create(:goal) }
 
         it 'only includes goals owned by the current user' do
           expect(Goal.count).to eq 2
@@ -78,7 +78,7 @@ RSpec.describe GoalsController, type: :controller do
     it_behaves_like 'rejects unauthorized access'
 
     context 'with goals from other users', :signed_in do
-      let(:goal) { FactoryGirl.create(:goal) }
+      let(:goal) { FactoryBot.create(:goal) }
 
       it 'does not display goals from other users' do
         subject
@@ -109,7 +109,7 @@ RSpec.describe GoalsController, type: :controller do
     end
 
     context 'with goals from other users', :signed_in do
-      let(:goal) { FactoryGirl.create(:goal) }
+      let(:goal) { FactoryBot.create(:goal) }
 
       it 'does not display goals from other users' do
         subject
@@ -192,7 +192,7 @@ RSpec.describe GoalsController, type: :controller do
       end
 
       context 'with goals from other users' do
-        let!(:goal) { FactoryGirl.create(:goal) }
+        let!(:goal) { FactoryBot.create(:goal) }
 
         it 'does not update goals from other users' do
           subject
@@ -239,7 +239,7 @@ RSpec.describe GoalsController, type: :controller do
       end
 
       context 'with goals from other users' do
-        let!(:goal) { FactoryGirl.create(:goal) }
+        let!(:goal) { FactoryBot.create(:goal) }
 
         it 'does not delete goals from other users' do
           expect{subject}.not_to change(Goal, :count)

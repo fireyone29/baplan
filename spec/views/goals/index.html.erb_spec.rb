@@ -11,14 +11,14 @@ end
 RSpec.describe 'goals/index', type: :view do
   let(:description) { 'Description' }
   let(:goal1) {
-    FactoryGirl.create(:goal,
-                       description: description,
-                       frequency: 0)
+    FactoryBot.create(:goal,
+                      description: description,
+                      frequency: 0)
   }
   let(:goal2) {
-    FactoryGirl.create(:goal,
-                       description: description,
-                       frequency: 0)
+    FactoryBot.create(:goal,
+                      description: description,
+                      frequency: 0)
   }
 
   context 'without goals' do

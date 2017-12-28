@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :streak do
     start_date { rand(1..100).days.ago }
     end_date { start_date + rand(15..25).days }

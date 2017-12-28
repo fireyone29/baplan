@@ -1,4 +1,4 @@
-require 'factory_girl_rails'
+require 'factory_bot_rails'
 
 Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each do |f|
   require f

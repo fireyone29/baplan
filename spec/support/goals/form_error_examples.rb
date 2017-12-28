@@ -1,9 +1,9 @@
 RSpec.shared_examples 'displays goal form errors' do |fields|
   let(:message) { 'my error message!' }
   let(:goal) {
-    FactoryGirl.create(:goal,
-                       description: 'Description',
-                       frequency: 0)
+    FactoryBot.create(:goal,
+                      description: 'Description',
+                      frequency: 0)
   }
 
   before(:each) do

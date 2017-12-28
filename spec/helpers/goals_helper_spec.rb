@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe GoalsHelper, type: :helper do
-  let(:goal) { FactoryGirl.create(:goal) }
+  let(:goal) { FactoryBot.create(:goal) }
   let(:errors) { {} }
 
   before do
@@ -62,7 +62,7 @@ RSpec.describe GoalsHelper, type: :helper do
     end
 
     context 'with a streak' do
-      let(:streak) { FactoryGirl.create(:daily_streak, goal_id: goal.id) }
+      let(:streak) { FactoryBot.create(:daily_streak, goal_id: goal.id) }
 
       before do
         allow(goal).to receive(:latest_streak).and_return(streak)

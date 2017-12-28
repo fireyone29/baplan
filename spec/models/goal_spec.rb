@@ -2,39 +2,39 @@ require 'rails_helper'
 
 RSpec.describe Goal, type: :model do
   it 'must be associated with a user' do
-    expect(FactoryGirl.build(:goal, user_id: nil)).not_to be_valid
+    expect(FactoryBot.build(:goal, user_id: nil)).not_to be_valid
   end
 
   it 'only allows valid frequencies' do
-    expect{FactoryGirl.build(:goal, frequency: -1)}
+    expect{FactoryBot.build(:goal, frequency: -1)}
       .to raise_error(ArgumentError)
   end
 
   it 'does not allow empty descriptions' do
-    expect(FactoryGirl.build(:goal, description: '')).not_to be_valid
+    expect(FactoryBot.build(:goal, description: '')).not_to be_valid
   end
 
   context 'with an existing goal' do
-    let!(:goal) { FactoryGirl.create(:goal) }
+    let!(:goal) { FactoryBot.create(:goal) }
 
     it 'does not allow duplicate descriptions for the same user' do
-      new_goal = FactoryGirl.build(:goal,
-                                   user_id: goal.user.id,
-                                   description: goal.description)
+      new_goal = FactoryBot.build(:goal,
+                                  user_id: goal.user.id,
+                                  description: goal.description)
 
       expect(new_goal).not_to be_valid
     end
 
     it 'allows the same description on different users' do
-      new_goal = FactoryGirl.create(:goal, description: goal.description)
+      new_goal = FactoryBot.create(:goal, description: goal.description)
       expect(new_goal).to be_valid
     end
   end
 
   context 'with associated streaks' do
-    let(:goal) { FactoryGirl.create(:goal) }
-    let!(:streak1) { FactoryGirl.create(:streak, goal_id: goal.id) }
-    let!(:streak2) { FactoryGirl.create(:streak, goal_id: goal.id) }
+    let(:goal) { FactoryBot.create(:goal) }
+    let!(:streak1) { FactoryBot.create(:streak, goal_id: goal.id) }
+    let!(:streak2) { FactoryBot.create(:streak, goal_id: goal.id) }
 
     it 'destroys owned streaks when destroyed' do
       expect{goal.destroy}.to change(Streak, :count).by(-2)
@@ -44,7 +44,7 @@ RSpec.describe Goal, type: :model do
   end
 
   describe '#latest_streak' do
-    let(:goal) { FactoryGirl.create(:goal) }
+    let(:goal) { FactoryBot.create(:goal) }
     subject(:latest_streak) { goal.latest_streak }
 
     context 'with no streaks' do
@@ -55,16 +55,16 @@ RSpec.describe Goal, type: :model do
 
     context 'with multiple streaks' do
       let!(:streak1) {
-        FactoryGirl.create(:streak,
-                           start_date: 5.days.ago,
-                           end_date: 1.day.ago,
-                           goal_id: goal.id)
+        FactoryBot.create(:streak,
+                          start_date: 5.days.ago,
+                          end_date: 1.day.ago,
+                          goal_id: goal.id)
       }
       let!(:streak2) {
-        FactoryGirl.create(:streak,
-                           start_date: 1.year.ago,
-                           end_date: 1.week.ago,
-                           goal_id: goal.id)
+        FactoryBot.create(:streak,
+                          start_date: 1.year.ago,
+                          end_date: 1.week.ago,
+                          goal_id: goal.id)
       }
 
       it 'returns the streak with the most recent end_date' do
@@ -74,7 +74,7 @@ RSpec.describe Goal, type: :model do
   end
 
   describe '#relevant_streaks' do
-    let!(:goal) { FactoryGirl.create(:goal) }
+    let!(:goal) { FactoryBot.create(:goal) }
     let(:date) { Time.zone.today }
     subject { goal.relevant_streaks(date) }
 
@@ -84,7 +84,7 @@ RSpec.describe Goal, type: :model do
 
     context 'with streaks from other goals' do
       before do
-        FactoryGirl.create(:daily_streak)
+        FactoryBot.create(:daily_streak)
       end
 
       it { is_expected.to be_empty }
@@ -92,22 +92,22 @@ RSpec.describe Goal, type: :model do
 
     context 'with streaks not close to date' do
       let!(:streak) {
-        FactoryGirl.create(:daily_streak,
-                           goal_id: goal.id,
-                           start_date: date - 1.year)
+        FactoryBot.create(:daily_streak,
+                          goal_id: goal.id,
+                          start_date: date - 1.year)
       }
 
       it { is_expected.to be_empty }
     end
 
     context 'weekly goal' do
-      let(:goal) { FactoryGirl.create(:goal, frequency: :weekly) }
+      let(:goal) { FactoryBot.create(:goal, frequency: :weekly) }
 
       context 'with date one period before streak' do
         let!(:streak) {
-          FactoryGirl.create(:weekly_streak,
-                             goal_id: goal.id,
-                             start_date: date + 3.days)
+          FactoryBot.create(:weekly_streak,
+                            goal_id: goal.id,
+                            start_date: date + 3.days)
         }
         it 'returns that streak' do
           expect(subject).to match_array [streak]
@@ -116,10 +116,10 @@ RSpec.describe Goal, type: :model do
 
       context 'with date one period after streak' do
         let!(:streak) {
-          FactoryGirl.create(:weekly_streak,
-                             goal_id: goal.id,
-                             start_date: date - 17.days,
-                             end_date: date - 3.days)
+          FactoryBot.create(:weekly_streak,
+                            goal_id: goal.id,
+                            start_date: date - 17.days,
+                            end_date: date - 3.days)
         }
         it 'returns that streak' do
           expect(subject).to match_array [streak]
@@ -128,13 +128,13 @@ RSpec.describe Goal, type: :model do
     end
 
     context 'daily goal' do
-      let(:goal) { FactoryGirl.create(:goal, frequency: :daily) }
+      let(:goal) { FactoryBot.create(:goal, frequency: :daily) }
 
       context 'with date one period before streak' do
         let!(:streak) {
-          FactoryGirl.create(:daily_streak,
-                             goal_id: goal.id,
-                             start_date: date + 1.day)
+          FactoryBot.create(:daily_streak,
+                            goal_id: goal.id,
+                            start_date: date + 1.day)
         }
         it 'returns that streak' do
           expect(subject).to match_array [streak]
@@ -143,10 +143,10 @@ RSpec.describe Goal, type: :model do
 
       context 'with date one period after streak' do
         let!(:streak) {
-          FactoryGirl.create(:daily_streak,
-                             goal_id: goal.id,
-                             start_date: date - 5.days,
-                             end_date: date - 1.day)
+          FactoryBot.create(:daily_streak,
+                            goal_id: goal.id,
+                            start_date: date - 5.days,
+                            end_date: date - 1.day)
         }
         it 'returns that streak' do
           expect(subject).to match_array [streak]
@@ -156,10 +156,10 @@ RSpec.describe Goal, type: :model do
 
     context 'with streak containing the date' do
       let!(:streak) {
-        FactoryGirl.create(:daily_streak,
-                           goal_id: goal.id,
-                           start_date: date - 2.weeks,
-                           end_date: date + 1.week)
+        FactoryBot.create(:daily_streak,
+                          goal_id: goal.id,
+                          start_date: date - 2.weeks,
+                          end_date: date + 1.week)
       }
       it 'returns that streak' do
         expect(subject).to match_array [streak]
@@ -167,17 +167,17 @@ RSpec.describe Goal, type: :model do
     end
 
     context 'with two relevant steaks' do
-      let(:goal) { FactoryGirl.create(:goal, frequency: :daily) }
+      let(:goal) { FactoryBot.create(:goal, frequency: :daily) }
       let!(:streak1) {
-        FactoryGirl.create(:daily_streak,
-                           goal_id: goal.id,
-                           start_date: date - 5.days,
-                           end_date: date - 1.day)
+        FactoryBot.create(:daily_streak,
+                          goal_id: goal.id,
+                          start_date: date - 5.days,
+                          end_date: date - 1.day)
       }
       let!(:streak2) {
-        FactoryGirl.create(:daily_streak,
-                           goal_id: goal.id,
-                           start_date: date + 1.day)
+        FactoryBot.create(:daily_streak,
+                          goal_id: goal.id,
+                          start_date: date + 1.day)
       }
 
       it 'returns both streaks' do
@@ -186,17 +186,17 @@ RSpec.describe Goal, type: :model do
     end
 
     context 'with one relevant and one irrelevant streak' do
-      let(:goal) { FactoryGirl.create(:goal, frequency: :daily) }
+      let(:goal) { FactoryBot.create(:goal, frequency: :daily) }
       let!(:streak1) {
-        FactoryGirl.create(:daily_streak,
-                           goal_id: goal.id,
-                           start_date: date - 5.days,
-                           end_date: date - 1.day)
+        FactoryBot.create(:daily_streak,
+                          goal_id: goal.id,
+                          start_date: date - 5.days,
+                          end_date: date - 1.day)
       }
       let!(:streak2) {
-        FactoryGirl.create(:daily_streak,
-                           goal_id: goal.id,
-                           start_date: date + 1.year)
+        FactoryBot.create(:daily_streak,
+                          goal_id: goal.id,
+                          start_date: date + 1.year)
       }
       it 'returns the relevant streak' do
         expect(subject).to match_array [streak1]
@@ -211,7 +211,7 @@ RSpec.describe Goal, type: :model do
 
   describe '#update_or_create' do
     let(:date) { Time.zone.today }
-    let!(:goal) { FactoryGirl.create(:goal, frequency: :weekly) }
+    let!(:goal) { FactoryBot.create(:goal, frequency: :weekly) }
     subject { goal.update_or_create!(date) }
 
     context 'with no relevant streaks' do
@@ -236,7 +236,7 @@ RSpec.describe Goal, type: :model do
     end
 
     context 'with one relevant streak' do
-      let(:streak) { FactoryGirl.create(:daily_streak, goal_id: goal.id) }
+      let(:streak) { FactoryBot.create(:daily_streak, goal_id: goal.id) }
       let(:date) { streak.end_date }
       let(:streak_length) { 0 }
 
@@ -263,11 +263,11 @@ RSpec.describe Goal, type: :model do
     end
 
     context 'with two relevant streaks' do
-      let(:streak1) { FactoryGirl.create(:daily_streak, goal_id: goal.id) }
+      let(:streak1) { FactoryBot.create(:daily_streak, goal_id: goal.id) }
       let(:streak2) {
-        FactoryGirl.create(:daily_streak,
-                           goal_id: goal.id,
-                           start_date: streak1.end_date)
+        FactoryBot.create(:daily_streak,
+                          goal_id: goal.id,
+                          start_date: streak1.end_date)
       }
       let(:streak_length) { 0 }
 

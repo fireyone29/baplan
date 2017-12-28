@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'goals/edit', type: :view do
   before(:each) do
-    @goal = assign(:goal, FactoryGirl.create(:goal))
+    @goal = assign(:goal, FactoryBot.create(:goal))
   end
 
   it 'renders the edit goal form' do

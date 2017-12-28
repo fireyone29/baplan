@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'goals/show', type: :view do
   let(:goal) {
-    FactoryGirl.create(:goal,
-                       description: 'Description',
-                       frequency: 0)
+    FactoryBot.create(:goal,
+                      description: 'Description',
+                      frequency: 0)
   }
   let(:length) { 10 }
 
